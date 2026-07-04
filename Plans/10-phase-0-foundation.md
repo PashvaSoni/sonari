@@ -48,12 +48,36 @@
 - [x] `supabase/config.toml` `project_id` set
 - [x] Dummy migration applied remotely (`_sonari_schema_migrations_probe`)
 
+### Cloudflare Workers Static Assets (ADR-007)
+
+Create **two** Workers (Git-connected), both on `PashvaSoni/sonari`, branch `main`. Leave **Root directory** empty (repo root). Config files: `apps/store/wrangler.toml`, `apps/admin/wrangler.toml`.
+
+| Setting | Store (`sonari-store`) | Admin (`sonari-admin`) |
+|---|---|---|
+| Build command | `pnpm install --frozen-lockfile && pnpm turbo run build --filter=@sonari/store` | `pnpm install --frozen-lockfile && pnpm turbo run build --filter=@sonari/admin` |
+| Deploy command | `npx wrangler deploy -c apps/store/wrangler.toml` | `npx wrangler deploy -c apps/admin/wrangler.toml` |
+| Node version (env) | `NODE_VERSION=22` | `NODE_VERSION=22` |
+
+**Environment variables** (build-time `VITE_*` — set in Worker build settings for Production + Preview):
+
+| Name | Value |
+|---|---|
+| `NODE_VERSION` | `22` |
+| `VITE_SUPABASE_URL` | `https://vewfxwzyialmlsaljafz.supabase.co` |
+| `VITE_SUPABASE_ANON_KEY` | *(anon key from Supabase — not service_role)* |
+| `VITE_API_URL` | `http://localhost:3001` until Fly.io is live |
+| `VITE_SENTRY_DSN` | *(empty until Sentry)* |
+
+SPA routing: `not_found_handling = "single-page-application"` in each `wrangler.toml`.
+
 ### Pending credentials / accounts
 
-- [ ] Both apps load their login pages on Cloudflare Pages (or Vercel) preview URL
+- [ ] Both apps load their login pages on Cloudflare Workers (`*.workers.dev`)
+
 - [ ] API `/health` returns 200 on Fly.io (`bom`)
 - [ ] A PR triggers CI, deploys a preview URL, comments the URL back
 - [ ] Sentry captures a synthetic error from each surface
+
 
 
 ## Current repo layout (as implemented)
@@ -92,4 +116,6 @@ Local scripts: `pnpm dev:store`, `pnpm dev:admin`, `pnpm dev:api`, `pnpm build`,
 - **2026-07-04:** GitHub remote `PashvaSoni/sonari`, branch `main`, CODEOWNERS set.
 - **2026-07-04:** Supabase project `vewfxwzyialmlsaljafz` env wired; `@sonari/db` clients added; probe migration applied remotely.
 - **2026-07-04:** Removed temporary `scripts/verify-supabase.mjs` (one-off smoke test no longer needed).
+- **2026-07-04:** Frontend host = Cloudflare Workers Static Assets (ADR-007); `wrangler.toml` per app.
+
 

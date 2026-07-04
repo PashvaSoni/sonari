@@ -92,8 +92,8 @@ A multi-tenant SaaS jewellery ERP built India-first (HUID, GST, TCS) with an obs
 
 | Component | Where | Cost @ start | Cost @ 100 stores | Cost @ 1000 stores |
 |-----------|-------|-------------|-------------------|---------------------|
-| Store App (Vite SPA) | **Cloudflare Pages** or **Vercel** (static build) | Free | Free-$10/mo | ~$20/mo |
-| Admin App (Vite SPA) | **Cloudflare Pages** or **Vercel** | Free | Free | Free |
+| Store App (Vite SPA) | **Cloudflare Workers Static Assets** (or Pages / Vercel) | Free | Free-$10/mo | ~$20/mo |
+| Admin App (Vite SPA) | **Cloudflare Workers Static Assets** (or Pages / Vercel) | Free | Free | Free |
 | API (Fastify) | **Fly.io** (shared-cpu-1x, 256MB, autoscale) | Free | ~$15/mo | ~$50/mo |
 | Postgres + Auth + Storage | **Supabase** (Free → Pro) | Free | $25/mo | ~$100/mo |
 | Redis (BullMQ) | **Upstash** (pay-per-request) | Free | ~$5/mo | ~$20/mo |
@@ -207,3 +207,5 @@ This file is versioned. When something material changes (stack, phase order, mod
 ## Changelog
 
 - **2026-07-04:** Repo root monorepo layout (not nested `sonari/`); full package list; Sentry Vite SDKs; PWA row no longer references next-pwa.
+- **2026-07-04:** Frontends on Cloudflare Workers Static Assets (ADR-007), not Pages-only.
+

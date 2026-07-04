@@ -126,3 +126,21 @@ Alternatives considered:
 
 ---
 
+## ADR-007: Cloudflare Workers Static Assets over Pages for frontends
+Date: 2026-07-04
+Author: agent / user
+Status: Accepted
+Context: Cloudflare dashboard defaults to "Create a Worker"; Pages is de-emphasized ("Looking to deploy Pages?" link). User prefers Workers path.
+Decision: Host `apps/store` and `apps/admin` as **Workers Static Assets** (Vite `dist/` + SPA `not_found_handling`). Config: `apps/store/wrangler.toml`, `apps/admin/wrangler.toml`. ADR-003's preference for Cloudflare edge hosting still holds; delivery mechanism is Workers Assets instead of Pages.
+Consequences:
+  - `10-phase-0-foundation.md` deploy settings updated
+  - `00-MASTER-PLAN.md` §5 notes Workers Assets for frontends
+  - Dashboard: Build command + Deploy command (`npx wrangler deploy`)
+  - Free `*.workers.dev` URLs (custom domains still supported)
+Alternatives considered:
+  - Cloudflare Pages: still valid, harder to find in current UI
+  - Vercel: fallback per ADR-003 if Workers Assets fails
+
+---
+
+
