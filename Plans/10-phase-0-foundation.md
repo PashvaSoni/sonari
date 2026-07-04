@@ -56,6 +56,9 @@ Create **two** Workers (Git-connected), both on `PashvaSoni/sonari`, branch `mai
 |---|---|---|
 | Build command | `pnpm install --frozen-lockfile && pnpm turbo run build --filter=@sonari/store` | `pnpm install --frozen-lockfile && pnpm turbo run build --filter=@sonari/admin` |
 | Deploy command | `npx wrangler deploy -c apps/store/wrangler.toml` | `npx wrangler deploy -c apps/admin/wrangler.toml` |
+| Custom domain (in `wrangler.toml`) | `app.sonari.shop` | `admin.sonari.shop` |
+
+`workers_dev = false` — deploy uses custom domains only (no `workers.dev` registration required). Zone `sonari.shop` must be **Active** on the same Cloudflare account.
 | Node version (env) | `NODE_VERSION=22` | `NODE_VERSION=22` |
 
 **Environment variables** (build-time `VITE_*` — set in Worker build settings for Production + Preview):
@@ -71,13 +74,26 @@ Create **two** Workers (Git-connected), both on `PashvaSoni/sonari`, branch `mai
 SPA routing: `not_found_handling = "single-page-application"` in each `wrangler.toml`.
 Do **not** ship `public/_redirects` — Workers rejects `/* /index.html 200` as an infinite loop when SPA handling is enabled.
 
+### Domain `sonari.shop` (ADR-008)
+
+| Host | Target |
+|---|---|
+| `app.sonari.shop` | Worker `sonari-store` |
+| `admin.sonari.shop` | Worker `sonari-admin` |
+| `api.sonari.shop` | Fly.io API (when deployed) |
+| `sonari.shop` (apex) | Marketing later, or redirect to `app.sonari.shop` |
+
+Zone must live on Cloudflare DNS (add site + update nameservers at registrar if not already).
+
 ### Pending credentials / accounts
 
-- [ ] Both apps load their login pages on Cloudflare Workers (`*.workers.dev`)
-
-- [ ] API `/health` returns 200 on Fly.io (`bom`)
+- [ ] Cloudflare: register `workers.dev` subdomain (one-time) **or** rely on custom domains only
+- [ ] `app.sonari.shop` → store Worker live (login shell)
+- [ ] `admin.sonari.shop` → admin Worker live (login shell)
+- [ ] API `/health` returns 200 on Fly.io (`bom`) + `api.sonari.shop`
 - [ ] A PR triggers CI, deploys a preview URL, comments the URL back
 - [ ] Sentry captures a synthetic error from each surface
+
 
 
 
@@ -119,5 +135,8 @@ Local scripts: `pnpm dev:store`, `pnpm dev:admin`, `pnpm dev:api`, `pnpm build`,
 - **2026-07-04:** Removed temporary `scripts/verify-supabase.mjs` (one-off smoke test no longer needed).
 - **2026-07-04:** Frontend host = Cloudflare Workers Static Assets (ADR-007); `wrangler.toml` per app.
 - **2026-07-04:** Removed `public/_redirects` — conflicts with Workers SPA `not_found_handling`.
+- **2026-07-04:** Domain `sonari.shop` — `app.` / `admin.` / `api.` subdomains (ADR-008).
+- **2026-07-04:** `wrangler.toml` routes use `custom_domain` so deploy works without `workers.dev` subdomain.
+
 
 

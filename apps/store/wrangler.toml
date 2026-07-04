@@ -1,8 +1,13 @@
 # Cloudflare Workers Static Assets (SPA)
-# Dashboard: build from monorepo root, then deploy this config.
+# Custom domain: app.sonari.shop (ADR-008)
+# Zone sonari.shop must be Active on this Cloudflare account.
 name = "sonari-store"
 compatibility_date = "2025-07-04"
-workers_dev = true
+workers_dev = false
+
+[[routes]]
+pattern = "app.sonari.shop"
+custom_domain = true
 
 [assets]
 directory = "./dist"
