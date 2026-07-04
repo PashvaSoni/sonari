@@ -1,0 +1,48 @@
+---
+description: Sonari anti-N+1 rules — batch, join, embed, never query-in-loop
+globs: "apps/**/*.ts,apps/**/*.tsx,packages/db/**/*,packages/offline/**/*"
+alwaysApply: false
+---
+
+# Query Efficiency
+
+Source: `Plans/18-ai-agent-manual.md` §5
+
+## Golden rules
+
+1. Never call API/DB inside `for` / `map` / `forEach`
+2. Never query inside another query's callback — join or preload
+3. Never render N rows that each fetch their own data — query once, pass props
+4. List/detail endpoints return all data the view needs
+
+## Patterns
+
+```ts
+// ❌ N+1
+for (const bill of bills) {
+  await supabase.from('bill_items').select('*').eq('bill_id', bill.id)
+}
+
+// ✅ Embedded select
+await supabase.from('bills').select('*, bill_items(*), payments(*), customer:customers(id, name, phone)')
+```
+
+| Need | Use |
+|---|---|
+| One table, filtered | `.select()` + `.eq()` / `.in()` |
+| Multi-table related | Embedded select `resource(*)` |
+| Repeated complex SELECT | Postgres VIEW (RLS still applies) |
+| Procedural / atomic multi-step | RPC / Postgres FUNCTION |
+| Super-admin cross-tenant aggregates | `SECURITY DEFINER` — aggregates only |
+| >3s / PDF / reports | BullMQ job |
+| Hot rarely-changing reads | TanStack Query cache + Realtime invalidate |
+
+## Frontend
+
+- Never `useQuery` inside `.map()` JSX
+- Hoist queries to page/route; pass data as props
+- Prefer TanStack parallel `queries: [...]` over sequential awaits
+
+## Self-check before PR
+
+"How many DB queries when list has 100 items?" If ≥100 → rewrite. Target ≤3 per request.

@@ -1,0 +1,56 @@
+---
+description: Sonari TypeScript, money, naming, testing, and Definition of Done
+globs: "**/*.ts,**/*.tsx"
+alwaysApply: false
+---
+
+# Coding Standards
+
+Source: `Plans/15-coding-standards.md`
+
+## Language
+
+- TypeScript **strict** + `noUncheckedIndexedAccess`. No `any` — use `unknown` and narrow.
+- ESM only. React 18 function components + hooks. Fastify plugins are async.
+- Explicit parameter and return types on every function.
+- Shared types in `packages/types`. Zod is source of truth; types via `z.infer<>`.
+- Enums: `as const` + Zod enum — avoid TS `enum`.
+
+## Naming & layout
+
+- Files: `kebab-case`. React components: `PascalCase.tsx`.
+- Feature-folder modules (see `03-backend-api.md`). No catch-all `utils/` bins.
+- Booleans affirmative: `isReady`, not `notReady`.
+
+## Money & weight (hard)
+
+```ts
+// ❌ BAD
+const total = price * qty
+
+// ✅ GOOD — Decimal.js in packages/domain only
+const total = new Decimal(price).mul(qty).toFixed(2) // string on wire
+```
+
+- DB: money `NUMERIC(14,2)`, weight `NUMERIC(10,3)`
+- Wire: money as **string** (`"51240.00"`)
+- Formatters only in `packages/ui`
+
+## Errors
+
+API: `{ code, message, details, requestId }`. Never leak Postgres/Supabase internals. Toast user-friendly messages; Sentry gets full detail.
+
+## Testing
+
+- Vitest unit/integration · Playwright E2E (happy path + offline write path)
+- `packages/domain` ≥ 95% · API modules ≥ 85%
+- Every new tenant table: RLS leak test with second tenant
+- Fixtures in adjacent `__fixtures__/`
+
+## Definition of Done (feature)
+
+Zod in `packages/types` · domain logic + tests · API + integration test · loading/empty/error UI · 375px responsive · keyboard + `aria-label` · offline write path (or documented online-only) · idempotent (`client_uuid` / Idempotency-Key) · RLS leak test · Sentry boundary · plan MD updated · Playwright happy path
+
+## Git
+
+Branches: `feature/<slug>`, `fix/<slug>`. Conventional commits. PR ≤ 400 lines (else ADR). Human merges; agents propose only.

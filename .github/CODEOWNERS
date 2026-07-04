@@ -1,0 +1,10 @@
+# Default owner
+* @PashvaSoni
+
+# Billing math requires a second reviewer (Plans/15-coding-standards.md §8)
+# Add a second handle here when the team grows.
+/packages/domain/ @PashvaSoni
+
+# Auth, RLS, migrations
+/packages/db/ @PashvaSoni
+/apps/api/ @PashvaSoni

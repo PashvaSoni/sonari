@@ -1,0 +1,10 @@
+# Supabase local/link config — run `supabase link --project-ref <ref>` after creating
+# a Mumbai (ap-south-1) project. Migrations live in packages/db/migrations/.
+
+project_id = "sonari"
+
+[api]
+enabled = true
+
+[db]
+major_version = 15

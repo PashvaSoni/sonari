@@ -1,0 +1,35 @@
+---
+description: Sonari billing domain — Decimal money, pure functions, escalate money changes
+globs: "packages/domain/**/*,**/billing/**/*"
+alwaysApply: false
+---
+
+# Domain & Billing Engine
+
+Source: `Plans/08-billing-engine.md`, `Plans/06-shared-modules.md`
+
+## Package rules
+
+- `packages/domain` is **pure** — zero I/O, zero network, zero DB
+- All money/weight/GST/HUID math lives here and is unit-tested (≥95%)
+- **Never** use JS `number` for money — always `Decimal.js`
+- Wire format: money as string; parse on read
+
+## Before changing billing math
+
+1. Read `08-billing-engine.md` fully for the rule
+2. Search existing helpers in `packages/domain/` — 99% already exist
+3. **Escalate to human** before editing `packages/domain/billing/*`
+4. Run full `packages/domain` test suite before considering done
+5. Bills snapshot metal rates used; rates are audited/event-sourced
+
+## Hard rules
+
+- Never trust LLM/voice output for money — always re-validate with domain rules
+- HUID: BIS format validated client + server
+- GST/TCS/rounding only per plan — never invent tax rules
+- Ambiguous money rule → ask with options, or ADR — never guess
+
+## Idempotency
+
+Every bill mutation uses client-generated UUID for offline retry + double-click safety.

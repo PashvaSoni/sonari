@@ -1,0 +1,72 @@
+---
+description: Sonari agent constitution — read order, pre-task ritual, ask vs proceed, hard nos
+alwaysApply: true
+---
+
+# Sonari — Agent Constitution
+
+India-first jewellery billing + ERP SaaS. Plans live in `Plans/`. Full constitution: `Plans/18-ai-agent-manual.md`.
+
+## Prime directives
+
+1. **READ before WRITE** — read governing plans before any code
+2. **REUSE before REBUILD** — search `packages/ui`, `packages/domain`, `packages/types` first
+3. **ASK before ASSUME** — never invent business rules; ask or ADR in `Plans/DECISIONS.md`
+4. **Never ship N+1** — batch, join, or embed; never query-in-loop
+5. **UPDATE plans in the same change** when reality changes — **proactively, never wait to be asked** (see `sonari-plans-sync` rule)
+
+## Pre-task ritual (output before coding)
+
+```
+Task: <one-line>
+Read: ✓ 00-MASTER-PLAN ✓ 15-coding-standards ✓ 18-ai-agent-manual ✓ <task plans>
+Modules impacted: <apps/packages/tables>
+Contracts: <API, Zod, RLS>
+Questions: <or None>
+```
+
+If any question is non-trivial → **stop and ask** (options + recommendation).
+
+## Task → plan map
+
+| Task touches | Read |
+|---|---|
+| UI / component | `17-ui-components.md` + `packages/ui/COMPONENTS.md` |
+| Store screen | `04-frontend-store-app.md` |
+| Admin screen | `05-frontend-super-admin.md` |
+| Schema / migration | `02-data-model.md` |
+| API | `03-backend-api.md` |
+| Bill math / GST / HUID | `08-billing-engine.md` |
+| Offline / Dexie | `07-offline-sync.md` |
+| Tenant / RLS / auth | `01-architecture.md` + `02-data-model.md` §12 |
+| New feature scope | phase file `10`–`14` |
+| Notifications / LLM / PDF | `06-shared-modules.md` |
+
+## Phase scope
+
+Never exceed the **current phase**. Start at Phase 0 (`10-phase-0-foundation.md`) until acceptance passes, then Phase 1, etc. Phase 2+ features (karigar, schemes, voice, hardware) are out of scope until that phase.
+
+## STOP and ask / escalate
+
+Money math not in plan · new library not in stack · plan contradictions · ambiguous business rule · destructive migration · tenant isolation risk · change spans >5 files / >2 modules · user request contradicts a locked plan · secrets · RLS changes · `packages/domain/billing/*` · staff seeing cost prices · disabling tests · CI workflow changes
+
+## Hard nos
+
+- No JS `number` for money — `Decimal.js` in domain, `NUMERIC` in DB, `string` on wire
+- No RLS bypass (except explicit `SECURITY DEFINER` admin aggregates)
+- No direct `@radix-ui/*` / `lucide-react` / `cmdk` imports in apps — use `@sonari/ui`
+- No new library without ADR · no `.env` commits · no work on `main` · no push to `main`
+- No inventing endpoints/tables — implement plan specs or propose via ADR
+- Never trust LLM output for money — validate with `packages/domain`
+
+## Stack (locked — ADR-001/002/003)
+
+Vite + React 18 + RR v6 · Fastify · Tailwind · shadcn/ui + IndiaCN · Supabase (Mumbai) · BullMQ + Upstash · Dexie · Cloudflare Pages + Fly.io bom · Turborepo + pnpm
+
+## After task
+
+1. **Plan deviations** table first (or "None — implemented as planned"): what the plan said → what we did → why
+2. Plans updated in `Plans/` (+ ADR if non-trivial) — never leave docs stale
+3. Files changed, tests run
+
+Never silently diverge. Never claim done while plans are stale or deviations are unreported.

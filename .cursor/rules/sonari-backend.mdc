@@ -1,0 +1,35 @@
+---
+description: Sonari Fastify API — contracts, idempotency, tenant context, jobs
+globs: "apps/api/**/*"
+alwaysApply: false
+---
+
+# Backend API
+
+Source: `Plans/03-backend-api.md`
+
+## Before any endpoint
+
+1. Check `03-backend-api.md` endpoint contracts
+2. If planned but unimplemented → implement per spec
+3. If not in plan → ADR in `Plans/DECISIONS.md` with method, URL, Zod request/response
+
+## Patterns
+
+- Feature-folder modules under `apps/api/src/modules/`
+- Validate with Zod from `packages/types` — shared FE/BE
+- Business math only via `packages/domain` (pure, no I/O)
+- JWT → extract `tenant_id`; every write is tenant-scoped; RLS is the backstop
+- Mutations are **idempotent** (`client_uuid` or `Idempotency-Key` header)
+- Errors: `{ code, message, details, requestId }` — no DB internals
+
+## Data access
+
+- Prefer embedded selects / joins; ≤3 DB queries per request (warn >3, fail >10)
+- List endpoints return relations needed by the list (`expand=` or defaults)
+- Heavy work (>3s): BullMQ job, return job id — never block the request
+- Providers (SMS, email, WhatsApp, LLM) only via `packages/*` interfaces
+
+## Tests
+
+Integration test per endpoint. New tables: cross-tenant RLS leak test.

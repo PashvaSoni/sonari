@@ -1,0 +1,40 @@
+---
+description: ADR format and plan edit mechanics when editing Plans/
+globs: "Plans/**/*"
+alwaysApply: false
+---
+
+# Plans & ADRs (edit mechanics)
+
+Proactive plan sync is **always on** via `sonari-plans-sync`. This rule covers format when editing `Plans/`.
+
+## Plan edit checklist
+
+1. Bump `Last-updated:`
+2. Changelog one-liner
+3. Breaking-ish → `> **Change note (YYYY-MM-DD):**` at top
+4. Surgical edits only — no full-section rewrites for small changes
+
+## ADRs (`DECISIONS.md`)
+
+One decision per ADR. Numbers never reused.
+
+```markdown
+## ADR-NNN: <imperative title>
+Date: YYYY-MM-DD
+Author: agent / <human>
+Status: Proposed | Accepted | Rejected | Superseded by ADR-XXX
+Context: ...
+Decision: ...
+Consequences:
+  - ...
+Alternatives considered:
+  - <option>: <why rejected>
+```
+
+If ADR conflicts with a plan MD, **later date wins**. Supersede — never delete history.
+
+## Do not
+
+- Delete plan files without ADR
+- Retroactively rewrite phase intent — use ADRs for post-hoc changes

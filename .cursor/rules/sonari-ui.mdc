@@ -1,0 +1,37 @@
+---
+description: Sonari UI reuse workflow — shadcn, IndiaCN, packages/ui, three-input rule
+globs: "apps/**/*.tsx,packages/ui/**/*"
+alwaysApply: false
+---
+
+# UI Components
+
+Source: `Plans/17-ui-components.md`. Read it before any UI work.
+
+## Product UI principles
+
+- Minimalist UI, maximalist backend — minimum typing, rest inferred/defaulted
+- **Three-input rule:** ≤3 inputs above the fold; progressive disclosure for the rest
+- Premium jewellery aesthetic — not Material/Ant enterprise look
+
+## Reuse decision tree (mandatory)
+
+```
+1. packages/ui/COMPONENTS.md → exists? Import from @sonari/ui
+2. IndiaCN catalog → exists? Copy into packages/ui/india/, adapt tokens
+3. shadcn catalog → exists? pnpm dlx shadcn add <name> into packages/ui
+4. Truly reusable? Build in packages/ui, update COMPONENTS.md
+   One-off only? apps/*/components/ with // TODO: promote if reused
+```
+
+## Hard rules
+
+- Apps import **only** from `@sonari/ui` — never `@radix-ui/*`, `lucide-react`, `cmdk` directly
+- Shared components live in `packages/ui` (primitives / india / compound / layouts)
+- India fields use india components: `RupeeInput`, `GstinInput`, `HuidInput`, `WeightInput`, `PurityInput`, etc.
+- Design tokens only — no one-off hex colors; use CSS variables in `tokens.css`
+- Every screen: loading, empty, error states · mobile 375px · keyboard navigable
+
+## Stack
+
+Vite SPA + React Router v6 data routers · Tailwind · shadcn/ui + IndiaCN · Radix · Lucide via `@sonari/ui` · Zustand + TanStack Query · RHF + Zod

@@ -1,0 +1,28 @@
+---
+description: Sonari offline-first — Dexie writes, sync engine, idempotent mutations
+globs: "packages/offline/**/*,apps/store/**/*"
+alwaysApply: false
+---
+
+# Offline-First
+
+Source: `Plans/07-offline-sync.md`
+
+## Principle
+
+Offline is the **baseline**, not a feature. Every write path must work offline and queue for sync — or be explicitly documented online-only.
+
+## Write path pattern
+
+1. Generate `client_uuid` on the client
+2. Write to IndexedDB (Dexie) immediately — UI updates from local data
+3. Sync engine POSTs when online with idempotency key = `client_uuid`
+4. On ack, mark local row `synced`
+5. Offline: exponential backoff retry
+
+## Rules
+
+- Never assume network for bill/stock/customer writes in the store app
+- Conflict resolution follows `07-offline-sync.md` — do not invent merge rules
+- Ship write paths with an offline test (DevTools offline / Playwright)
+- Domain validation runs client-side before queueing so bad bills never sync

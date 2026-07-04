@@ -1,0 +1,36 @@
+---
+description: Sonari data model — tenant_id, RLS, migrations, no destructive changes without ask
+globs: "packages/db/**/*,**/migrations/**/*"
+alwaysApply: false
+---
+
+# Data Model & RLS
+
+Source: `Plans/02-data-model.md`, `Plans/01-architecture.md` §3
+
+## Tenant isolation (non-negotiable)
+
+- Every business table has `tenant_id`
+- Every RLS policy filters by JWT `tenant_id`
+- Application code never bypasses RLS except explicit `SECURITY DEFINER` admin aggregates (no row-level data leaked)
+- Staff must never see cost prices or another branch's data
+
+## Before any table/column
+
+1. Search `02-data-model.md` and existing migrations
+2. If missing → propose in `Plans/DECISIONS.md` with SQL + RLS policy + **rollback SQL**
+3. Implement migration only after acceptance (or when task explicitly includes it)
+
+## Migrations
+
+- One concern per migration file
+- Always include rollback path
+- **STOP and ask** before drop/rename of columns with existing data
+- Money: `NUMERIC(14,2)` · Weight: `NUMERIC(10,3)` · never float/double
+
+## New table checklist
+
+- [ ] `tenant_id` + index
+- [ ] RLS enabled + policies for roles
+- [ ] Leak test: tenant A cannot read tenant B
+- [ ] `02-data-model.md` updated in same PR

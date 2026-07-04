@@ -1,0 +1,65 @@
+---
+description: ALWAYS update Plans/ when code or process diverges — never wait to be asked
+alwaysApply: true
+---
+
+# Plan sync is mandatory (no reminder needed)
+
+Plans in `Plans/` are the source of truth for future humans and agents. **If you change reality, you update the plans in the same turn/PR — proactively. Never wait for the user to ask.**
+
+## When you MUST update plans (same change as code)
+
+| You changed… | Update |
+|---|---|
+| Folder layout, package names, monorepo structure | `00-MASTER-PLAN.md` §3 + current phase file |
+| Stack, SDK, deploy host, tooling | `00-MASTER-PLAN.md` + affected module/phase plans |
+| Schema / migration | `02-data-model.md` |
+| API contract | `03-backend-api.md` |
+| Store / admin UI routes or IA | `04-frontend-store-app.md` / `05-frontend-super-admin.md` |
+| Shared package behavior | `06-shared-modules.md` (and package README if any) |
+| Offline / sync rules | `07-offline-sync.md` |
+| Billing math / GST / HUID | `08-billing-engine.md` |
+| UI library / components | `17-ui-components.md` + `packages/ui/COMPONENTS.md` |
+| Phase acceptance / deliverables status | phase file `10`–`14` |
+| Non-trivial deviation from any plan | **also** append ADR in `Plans/DECISIONS.md` |
+
+## How to edit a plan file
+
+1. Bump `Last-updated: YYYY-MM-DD`
+2. Add a one-liner under `## Changelog` (create section if missing)
+3. Breaking-ish: add `> **Change note (YYYY-MM-DD):**` near the top
+4. Prefer small surgical edits — do not rewrite whole sections
+5. Never delete historical decisions — mark `Superseded by ADR-NNN`
+
+## Tell the user (required — not optional)
+
+Whenever you diverge from a written plan, your reply to the user **must** include a short **Plan deviations** section **before** or at the top of the summary:
+
+```
+### Plan deviations
+| Plan said | We did | Why |
+|---|---|---|
+| <quote or cite plan file> | <what we implemented> | <why the plan was insufficient / wrong / inefficient> |
+```
+
+Rules for that section:
+- Be specific (file + section if possible), not vague ("minor tweaks")
+- One row per real deviation — skip if you followed the plan exactly (say "None — implemented as planned")
+- If you need approval *before* diverging (new library, money math, destructive migration), **ask first** with options; only implement after confirm
+- After implementing an approved or obvious deviation: update `Plans/` + ADR (if non-trivial) **and** still list it in **Plan deviations** so the user sees it without opening the MD files
+
+## End-of-task checklist (always)
+
+Before saying a task is done:
+
+- [ ] Plans that govern this work still match the code
+- [ ] Acceptance criteria / status checkboxes updated if progress changed
+- [ ] ADR added if you chose something the plan did not already lock
+- [ ] User was told **what** diverged and **why** (Plan deviations table, or "None")
+
+## Hard nos
+
+- ❌ Leaving plans stale because "we'll document later"
+- ❌ Only updating code when layout/stack/process changed
+- ❌ Waiting for the user to say "update the plans"
+- ❌ Silently diverging from the plan without telling the user what and why
