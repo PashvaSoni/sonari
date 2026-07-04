@@ -59,6 +59,22 @@ Create **two** Workers (Git-connected), both on `PashvaSoni/sonari`, branch `mai
 | Custom domain (in `wrangler.toml`) | `app.sonari.shop` | `admin.sonari.shop` |
 
 `workers_dev = false` — deploy uses custom domains only (no `workers.dev` registration required). Zone `sonari.shop` must be **Active** on the same Cloudflare account.
+
+#### Build watch paths (path filters — set in Cloudflare dashboard)
+
+So a change under `apps/admin` does **not** redeploy store (and vice versa). Configure per Worker:
+
+**Workers & Pages → worker → Settings → Build → Build watch paths**
+
+| Worker | Include paths (one per line) | Exclude paths (optional) |
+|---|---|---|
+| `sonari-store` | `apps/store/**` `packages/ui/**` `packages/config/**` `package.json` `pnpm-lock.yaml` `pnpm-workspace.yaml` `turbo.json` | `Plans/**` `**/*.md` `.cursor/**` `apps/admin/**` `apps/api/**` |
+| `sonari-admin` | `apps/admin/**` `packages/ui/**` `packages/config/**` `package.json` `pnpm-lock.yaml` `pnpm-workspace.yaml` `turbo.json` | `Plans/**` `**/*.md` `.cursor/**` `apps/store/**` `apps/api/**` |
+
+- Change only `apps/admin/**` → **admin** deploys only  
+- Change only `apps/store/**` → **store** deploys only  
+- Change `packages/ui/**` (shared) → **both** deploy (correct)  
+- Change only `Plans/**` → **neither** deploys
 | Node version (env) | `NODE_VERSION=22` | `NODE_VERSION=22` |
 
 **Environment variables** (build-time `VITE_*` — set in Worker build settings for Production + Preview):
@@ -137,6 +153,8 @@ Local scripts: `pnpm dev:store`, `pnpm dev:admin`, `pnpm dev:api`, `pnpm build`,
 - **2026-07-04:** Removed `public/_redirects` — conflicts with Workers SPA `not_found_handling`.
 - **2026-07-04:** Domain `sonari.shop` — `app.` / `admin.` / `api.` subdomains (ADR-008).
 - **2026-07-04:** `wrangler.toml` routes use `custom_domain` so deploy works without `workers.dev` subdomain.
+- **2026-07-04:** Documented Cloudflare Build watch paths so store/admin deploy independently.
+
 
 
 

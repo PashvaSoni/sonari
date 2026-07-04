@@ -1,6 +1,12 @@
 # Cloudflare Workers Static Assets (SPA)
 # Custom domain: app.sonari.shop (ADR-008)
 # Zone sonari.shop must be Active on this Cloudflare account.
+#
+# Build watch paths (dashboard → Settings → Build) — include:
+#   apps/store/**, packages/ui/**, packages/config/**
+#   package.json, pnpm-lock.yaml, pnpm-workspace.yaml, turbo.json
+# Exclude: Plans/**, apps/admin/**, apps/api/**
+
 name = "sonari-store"
 compatibility_date = "2025-07-04"
 workers_dev = false

@@ -145,4 +145,24 @@ Notes:
 
 ---
 
+## ADR-008: Production domain sonari.shop
+Date: 2026-07-04
+Author: user / agent
+Status: Accepted
+Context: Domain `sonari.shop` purchased. Need stable public URLs for store, admin, and (later) API.
+Decision: Host on Cloudflare DNS. Subdomains:
+  - `app.sonari.shop` → store Worker (`sonari-store`)
+  - `admin.sonari.shop` → admin Worker (`sonari-admin`)
+  - `api.sonari.shop` → Fly.io API (Phase 0 remaining / when API is deployed)
+Consequences:
+  - Custom domains attached in Cloudflare Workers (and Fly later)
+  - `VITE_API_URL` for production builds becomes `https://api.sonari.shop` once API is live
+  - Apex `sonari.shop` reserved for marketing (Phase 2+) or redirect to `app.sonari.shop`
+Alternatives considered:
+  - Apex-only for store: rejected — blocks clean admin/api hostnames
+  - `store.sonari.shop`: fine, but `app.` is shorter for staff bookmarks
+
+---
+
+
 
