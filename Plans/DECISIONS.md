@@ -140,6 +140,8 @@ Consequences:
 Alternatives considered:
   - Cloudflare Pages: still valid, harder to find in current UI
   - Vercel: fallback per ADR-003 if Workers Assets fails
+Notes:
+  - Do not include Pages-style `public/_redirects` (`/* /index.html 200`) — Workers reports infinite loop (error 100324) when combined with `not_found_handling = "single-page-application"`.
 
 ---
 

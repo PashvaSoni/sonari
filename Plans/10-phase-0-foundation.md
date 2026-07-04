@@ -69,6 +69,7 @@ Create **two** Workers (Git-connected), both on `PashvaSoni/sonari`, branch `mai
 | `VITE_SENTRY_DSN` | *(empty until Sentry)* |
 
 SPA routing: `not_found_handling = "single-page-application"` in each `wrangler.toml`.
+Do **not** ship `public/_redirects` — Workers rejects `/* /index.html 200` as an infinite loop when SPA handling is enabled.
 
 ### Pending credentials / accounts
 
@@ -117,5 +118,6 @@ Local scripts: `pnpm dev:store`, `pnpm dev:admin`, `pnpm dev:api`, `pnpm build`,
 - **2026-07-04:** Supabase project `vewfxwzyialmlsaljafz` env wired; `@sonari/db` clients added; probe migration applied remotely.
 - **2026-07-04:** Removed temporary `scripts/verify-supabase.mjs` (one-off smoke test no longer needed).
 - **2026-07-04:** Frontend host = Cloudflare Workers Static Assets (ADR-007); `wrangler.toml` per app.
+- **2026-07-04:** Removed `public/_redirects` — conflicts with Workers SPA `not_found_handling`.
 
 
