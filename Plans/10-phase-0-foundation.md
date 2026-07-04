@@ -40,13 +40,21 @@
 - [x] Remote: `https://github.com/PashvaSoni/sonari.git`
 - [x] Default branch `main`, CODEOWNERS `@PashvaSoni`
 
+### Done — Supabase (2026-07-04)
+
+- [x] Project: `vewfxwzyialmlsaljafz` (Mumbai), URL `https://vewfxwzyialmlsaljafz.supabase.co`
+- [x] Local `.env` files filled (root, store, admin, api) — secrets not committed
+- [x] `@sonari/db` wired with `createAnonClient` / `createServiceClient`
+- [x] `supabase/config.toml` `project_id` set
+- [x] Dummy migration applied remotely (`_sonari_schema_migrations_probe`)
+
 ### Pending credentials / accounts
 
 - [ ] Both apps load their login pages on Cloudflare Pages (or Vercel) preview URL
 - [ ] API `/health` returns 200 on Fly.io (`bom`)
 - [ ] A PR triggers CI, deploys a preview URL, comments the URL back
 - [ ] Sentry captures a synthetic error from each surface
-- [ ] Supabase project linked (Mumbai) and dummy migration applied remotely
+
 
 ## Current repo layout (as implemented)
 
@@ -82,3 +90,6 @@ Local scripts: `pnpm dev:store`, `pnpm dev:admin`, `pnpm dev:api`, `pnpm build`,
 
 - **2026-07-04:** Scaffolded monorepo at repo root; local build/test/lint/typecheck green. Acceptance split into local-done vs credentials-pending.
 - **2026-07-04:** GitHub remote `PashvaSoni/sonari`, branch `main`, CODEOWNERS set.
+- **2026-07-04:** Supabase project `vewfxwzyialmlsaljafz` env wired; `@sonari/db` clients added; probe migration applied remotely.
+- **2026-07-04:** Removed temporary `scripts/verify-supabase.mjs` (one-off smoke test no longer needed).
+
