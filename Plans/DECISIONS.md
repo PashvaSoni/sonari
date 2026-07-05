@@ -164,5 +164,21 @@ Alternatives considered:
 
 ---
 
+## ADR-009: Fly API primary region sin until bom capacity stabilizes
+Date: 2026-07-05
+Author: agent
+Status: Accepted
+Context: `fly deploy` to `sonari-api` failed in CI and locally with `no capacity available in bom`. Fly docs list `bom` among high-demand regions; Mumbai Supabase stays in ap-south-1 regardless.
+Decision: Set `primary_region = "sin"` (Singapore) in `apps/api/fly.toml` and deploy with `--ha=false` (single machine; Phase 0 has `min_machines_running = 0`). Revisit `bom` when Fly reports capacity or India edge improves.
+Consequences:
+  - `apps/api/fly.toml`, `.github/workflows/deploy-api.yml`, deployment sections in master/phase/backend plans
+  - India API latency ~60–90ms (sin ↔ Mumbai) vs target <50ms in bom — acceptable for Phase 0 bootstrap
+  - No code changes; hostname remains `sonari-api.fly.dev`
+Alternatives considered:
+  - Retry bom only: rejected — failed with 1 machine (`--ha=false`) and 2 machines
+  - Wait for Fly capacity: rejected — blocks CI and Phase 0 acceptance indefinitely
+
+---
+
 
 

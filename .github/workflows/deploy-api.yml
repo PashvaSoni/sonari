@@ -22,7 +22,7 @@ concurrency:
 
 jobs:
   deploy:
-    name: Fly.io (sonari-api · bom)
+    name: Fly.io (sonari-api · sin)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -32,7 +32,7 @@ jobs:
         uses: superfly/flyctl-actions/setup-flyctl@master
 
       - name: Deploy to Fly.io
-        run: flyctl deploy --config apps/api/fly.toml --dockerfile apps/api/Dockerfile -a sonari-api
+        run: flyctl deploy --config apps/api/fly.toml --dockerfile apps/api/Dockerfile -a sonari-api --ha=false
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 

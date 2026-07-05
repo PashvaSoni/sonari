@@ -1,8 +1,8 @@
 # Fly.io app config — run `fly launch` / `fly deploy` from repo root or apps/api.
-# Region: bom (Mumbai) per Plans/00-MASTER-PLAN.md
+# Region: sin (Singapore) per ADR-009 — bom (Mumbai) has no VM capacity as of 2026-07-05.
 
 app = "sonari-api"
-primary_region = "bom"
+primary_region = "sin"
 
 [build]
   dockerfile = "Dockerfile"

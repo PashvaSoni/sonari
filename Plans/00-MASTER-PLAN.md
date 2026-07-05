@@ -101,7 +101,7 @@ A multi-tenant SaaS jewellery ERP built India-first (HUID, GST, TCS) with an obs
 | Domain + email | Cloudflare + Resend | ~$12/yr + free | ~$12/yr + $20/mo | ~$50/mo |
 | **TOTAL** | | **~$0-5/mo** | **~$85/mo** | **~$300/mo** |
 
-**Region:** Supabase region **Mumbai (ap-south-1)**. Fly.io region **bom (Mumbai)**. Latency for India < 50ms.
+**Region:** Supabase region **Mumbai (ap-south-1)**. Fly.io region **sin (Singapore)** — ADR-009; target **bom (Mumbai)** when capacity available. Latency for India ~60–90ms via sin; <50ms target when on bom.
 
 ## 6. Phased delivery
 
@@ -200,7 +200,7 @@ This file is versioned. When something material changes (stack, phase order, mod
 
 **Agents:** any code or process change that diverges from these plans must update the relevant plan MD (and ADR if non-trivial) in the **same change** — do not wait to be asked.
 
-**Last-updated:** 2026-07-04
+**Last-updated:** 2026-07-05
 **Owner:** Store owner (you)
 **Version:** 1.0.1
 

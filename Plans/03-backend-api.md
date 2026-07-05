@@ -1,6 +1,6 @@
 # 03 — Backend API (Fastify)
 
-**Last-updated:** 2026-07-03
+**Last-updated:** 2026-07-05
 **Prereq:** [01-architecture.md](./01-architecture.md), [02-data-model.md](./02-data-model.md)
 
 ---
@@ -352,7 +352,7 @@ Response `429` with `Retry-After` header.
 `fly.toml`:
 ```toml
 app = "sonari-api"
-primary_region = "bom"
+primary_region = "sin"  # ADR-009; bom when Fly capacity returns
 
 [build]
   dockerfile = "Dockerfile"

@@ -103,7 +103,7 @@ Zone must live on Cloudflare DNS (add site + update nameservers at registrar if 
 
 ### Fly.io API (auto-deploy on `main`)
 
-App: `sonari-api` · region `bom` · hostname `https://sonari-api.fly.dev` · custom domain `api.sonari.shop`.
+App: `sonari-api` · region `sin` (ADR-009; bom when capacity returns) · hostname `https://sonari-api.fly.dev` · custom domain `api.sonari.shop`.
 
 **One-time (local):**
 
@@ -123,7 +123,7 @@ fly secrets set SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... -a sonari-api
 Deploy command (CI runner, repo root):
 
 ```bash
-flyctl deploy --config apps/api/fly.toml --dockerfile apps/api/Dockerfile -a sonari-api
+flyctl deploy --config apps/api/fly.toml --dockerfile apps/api/Dockerfile -a sonari-api --ha=false
 ```
 
 **GitHub secret (required):**
@@ -141,7 +141,8 @@ Changes only under `apps/store`, `apps/admin`, or `Plans/` do **not** redeploy t
 - [ ] Cloudflare: register `workers.dev` subdomain (one-time) **or** rely on custom domains only
 - [ ] `app.sonari.shop` → store Worker live (login shell)
 - [ ] `admin.sonari.shop` → admin Worker live (login shell)
-- [ ] API `/health` returns 200 on Fly.io (`bom`) + `api.sonari.shop`
+- [x] API `/health` returns 200 on Fly.io (`sin`) — `https://sonari-api.fly.dev/health`
+- [ ] Custom domain `api.sonari.shop` wired to Fly
 - [ ] A PR triggers CI, deploys a preview URL, comments the URL back
 - [ ] Sentry captures a synthetic error from each surface
 
@@ -192,6 +193,7 @@ Local scripts: `pnpm dev:store`, `pnpm dev:admin`, `pnpm dev:api`, `pnpm build`,
 - **2026-07-05:** Added root `.dockerignore` — fixes Fly/Depot `archive/tar: unknown file mode` when deploying from Windows (pnpm junctions in `node_modules`).
 - **2026-07-05:** API `Dockerfile` runner uses `pnpm deploy --legacy` — fixes Fly “not listening on 0.0.0.0:3001” (broken pnpm symlinks in copied `node_modules`).
 - **2026-07-05:** Added `.github/workflows/deploy-api.yml` — Fly auto-deploy on `main` (path-filtered) + `FLY_API_TOKEN` secret.
+- **2026-07-05:** Fly API region `bom` → `sin` (ADR-009) — Mumbai VM capacity exhausted; deploy uses `--ha=false`.
 
 
 

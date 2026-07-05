@@ -21,9 +21,9 @@
             │                      │                   │
             ▼                      ▼                   ▼
 ┌────────────────────────────────────────────────────────────────────┐
-│              EDGE (Cloudflare Pages / Fly.io Mumbai)               │
+│              EDGE (Cloudflare Pages / Fly.io Singapore)            │
 │  ┌─────────────────────────┐    ┌───────────────────────────────┐  │
-│  │ Vite Store (CF Pages)   │    │  Fastify API (Fly.io bom)     │  │
+│  │ Vite Store (CF Pages)   │    │  Fastify API (Fly.io sin)     │  │
 │  │  - SPA + PWA / Workbox  │    │  - REST + WS                  │  │
 │  │  - React Router v6      │◄──►│  - Zod validation             │  │
 │  │  - CSR app shell        │    │  - RLS-aware Supabase client  │  │
