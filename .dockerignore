@@ -1,0 +1,62 @@
+# Dependencies — pnpm uses Windows junctions; must not enter build context
+node_modules/
+**/node_modules/
+.pnpm-store/
+
+# Build outputs (Docker rebuilds these)
+dist/
+**/dist/
+build/
+.turbo/
+out/
+*.tsbuildinfo
+
+# Git / IDE / OS
+.git/
+.gitignore
+.github/
+.cursor/
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Secrets & local env
+.env
+.env.*
+!.env.example
+!**/.env.example
+*.pem
+*.key
+credentials.json
+service-account*.json
+
+# Logs, coverage, test artifacts
+logs/
+*.log
+coverage/
+playwright-report/
+test-results/
+.nyc_output/
+
+# Supabase local state
+supabase/.branches/
+supabase/.temp/
+
+# Docs / plans — not needed in API image
+Plans/
+README.md
+*.md
+!apps/api/**/*.md
+
+# Frontend apps — API Dockerfile only needs apps/api + packages
+apps/admin/
+apps/store/
+
+# Misc
+.cache/
+.tmp/
+temp/
+tmp/
+*.local

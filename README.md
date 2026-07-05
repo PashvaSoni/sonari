@@ -68,7 +68,7 @@ Or all at once: `pnpm dev`
 |---------|------|--------|
 | `apps/store` | Cloudflare Pages (or Vercel) | Build: `pnpm --filter @sonari/store build`, output `apps/store/dist` |
 | `apps/admin` | Cloudflare Pages (or Vercel) | Build: `pnpm --filter @sonari/admin build`, output `apps/admin/dist` |
-| `apps/api` | Fly.io `bom` | `apps/api/Dockerfile` + `fly.toml` |
+| `apps/api` | Fly.io `bom` | `apps/api/Dockerfile` + `fly.toml`; GitHub Actions `deploy-api.yml` on push to `main` |
 
 SPA fallback: `public/_redirects` → `/* /index.html 200`.
 

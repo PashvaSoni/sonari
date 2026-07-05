@@ -17,17 +17,17 @@ COPY package.json pnpm-workspace.yaml turbo.json tsconfig.base.json ./
 COPY apps/api ./apps/api
 COPY packages/types ./packages/types
 COPY packages/config ./packages/config
+ENV CI=true
 RUN pnpm --filter @sonari/types build && pnpm --filter @sonari/api build
+# Flatten prod deps — pnpm workspace symlinks break when copied to the runner stage
+RUN pnpm --filter @sonari/api --prod deploy --legacy /prod/api
+RUN test -f /prod/api/dist/index.js && test -d /prod/api/node_modules/fastify
 
 FROM node:22-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 ENV HOST=0.0.0.0
 ENV PORT=3001
-COPY --from=build /app/apps/api/dist ./dist
-COPY --from=build /app/apps/api/package.json ./package.json
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/packages/types/dist ./node_modules/@sonari/types/dist
-COPY --from=build /app/packages/types/package.json ./node_modules/@sonari/types/package.json
+COPY --from=build /prod/api .
 EXPOSE 3001
 CMD ["node", "dist/index.js"]

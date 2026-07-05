@@ -59,5 +59,6 @@ supabase/.temp/
 *.local
 .cache/
 .tmp/
+.tmp-*/
 temp/
 tmp/

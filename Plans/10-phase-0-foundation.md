@@ -1,6 +1,6 @@
 # 10 — Phase 0: Foundation
 
-**Last-updated:** 2026-07-04
+**Last-updated:** 2026-07-05
 **Duration:** ~1 week
 **Goal:** every subsequent phase drops code into a working skeleton.
 
@@ -101,6 +101,41 @@ Do **not** ship `public/_redirects` — Workers rejects `/* /index.html 200` as 
 
 Zone must live on Cloudflare DNS (add site + update nameservers at registrar if not already).
 
+### Fly.io API (auto-deploy on `main`)
+
+App: `sonari-api` · region `bom` · hostname `https://sonari-api.fly.dev` · custom domain `api.sonari.shop`.
+
+**One-time (local):**
+
+```bash
+fly auth login
+fly apps create sonari-api   # skip if exists
+fly secrets set SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... -a sonari-api
+```
+
+**GitHub Actions** — `.github/workflows/deploy-api.yml`
+
+| Trigger | Paths that redeploy API |
+|---|---|
+| Push to `main` | `apps/api/**`, `packages/types/**`, `packages/config/**`, root lockfiles, `.dockerignore`, workflow file |
+| Manual | Actions → **Deploy API** → **Run workflow** |
+
+Deploy command (CI runner, repo root):
+
+```bash
+flyctl deploy --config apps/api/fly.toml --dockerfile apps/api/Dockerfile -a sonari-api
+```
+
+**GitHub secret (required):**
+
+| Secret | How to create |
+|---|---|
+| `FLY_API_TOKEN` | `fly tokens create deploy -a sonari-api` → paste in **Settings → Secrets and variables → Actions** |
+
+Post-deploy smoke test in workflow: `GET https://sonari-api.fly.dev/health`.
+
+Changes only under `apps/store`, `apps/admin`, or `Plans/` do **not** redeploy the API.
+
 ### Pending credentials / accounts
 
 - [ ] Cloudflare: register `workers.dev` subdomain (one-time) **or** rely on custom domains only
@@ -138,7 +173,7 @@ Local scripts: `pnpm dev:store`, `pnpm dev:admin`, `pnpm dev:api`, `pnpm build`,
 4. **Supabase** — migration files ready; **needs** Mumbai project + `supabase link --project-ref <ref>`.
 5. **Env** — `.env.example` files present; copy to `.env` and fill secrets locally (never commit).
 6. **CI** — `.github/workflows/ci.yml` (lint, typecheck, test, build). Turbo remote cache / Sentry sourcemaps when deploy accounts exist.
-7. **Deploy** — configs sketched (`apps/api/Dockerfile`, `fly.toml`, SPA `_redirects`). **Needs** CF Pages / Fly accounts.
+7. **Deploy** — store/admin via Cloudflare Workers (dashboard). API via Fly.io: `apps/api/Dockerfile`, `fly.toml`, root `.dockerignore`; GitHub Actions `.github/workflows/deploy-api.yml` on push to `main` (path-filtered) + secret `FLY_API_TOKEN`. Manual bootstrap: `fly deploy --config apps/api/fly.toml --dockerfile apps/api/Dockerfile -a sonari-api` from repo root.
 8. **Sentry** — wire `@sentry/react` (store/admin) and `@sentry/node` (api) when DSNs exist.
 9. **PR template** — `.github/pull_request_template.md` with DoD checklist.
 10. **CODEOWNERS** — present; replace `@your-github-handle` when team is set.
@@ -154,6 +189,9 @@ Local scripts: `pnpm dev:store`, `pnpm dev:admin`, `pnpm dev:api`, `pnpm build`,
 - **2026-07-04:** Domain `sonari.shop` — `app.` / `admin.` / `api.` subdomains (ADR-008).
 - **2026-07-04:** `wrangler.toml` routes use `custom_domain` so deploy works without `workers.dev` subdomain.
 - **2026-07-04:** Documented Cloudflare Build watch paths so store/admin deploy independently.
+- **2026-07-05:** Added root `.dockerignore` — fixes Fly/Depot `archive/tar: unknown file mode` when deploying from Windows (pnpm junctions in `node_modules`).
+- **2026-07-05:** API `Dockerfile` runner uses `pnpm deploy --legacy` — fixes Fly “not listening on 0.0.0.0:3001” (broken pnpm symlinks in copied `node_modules`).
+- **2026-07-05:** Added `.github/workflows/deploy-api.yml` — Fly auto-deploy on `main` (path-filtered) + `FLY_API_TOKEN` secret.
 
 
 
