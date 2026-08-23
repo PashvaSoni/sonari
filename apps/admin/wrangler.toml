@@ -1,13 +1,9 @@
 # Cloudflare Workers Static Assets (SPA) — admin.sonari.shop (ADR-008)
 #
-# Workers Builds (monorepo) — set ALL of these in the Cloudflare dashboard:
-#   Root directory:                          apps/admin
-#   Build command:                           cd ../.. && pnpm install --frozen-lockfile && pnpm turbo run build --filter=@sonari/admin
-#   Deploy command:                          npx wrangler deploy
-#   Non-production branch deploy command:    npx wrangler versions upload
-#
-# Root directory is required so bare `wrangler versions upload` finds this file + ./dist.
-# Leaving root empty makes preview deploys fail with "Missing entry-point / assets directory".
+# Workers Builds (monorepo) — Root directory = / (repo root).
+#   Build:    pnpm install --frozen-lockfile && pnpm turbo run build --filter=@sonari/admin
+#   Deploy:   npx wrangler deploy -c apps/admin/wrangler.toml
+#   Versions: npx wrangler versions upload -c apps/admin/wrangler.toml
 #
 # Build watch paths (include): apps/admin/** packages/ui/** packages/config/**
 #   package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json

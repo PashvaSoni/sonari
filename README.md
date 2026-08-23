@@ -66,11 +66,11 @@ Or all at once: `pnpm dev`
 
 | Surface | Host | Notes |
 |---------|------|--------|
-| `apps/store` | Cloudflare Pages (or Vercel) | Build: `pnpm --filter @sonari/store build`, output `apps/store/dist` |
-| `apps/admin` | Cloudflare Pages (or Vercel) | Build: `pnpm --filter @sonari/admin build`, output `apps/admin/dist` |
-| `apps/api` | Fly.io `bom` | `apps/api/Dockerfile` + `fly.toml`; GitHub Actions `deploy-api.yml` on push to `main` |
+| `apps/store` | Cloudflare Workers Static Assets | Root `/`; deploy/versions need `-c apps/store/wrangler.toml` |
+| `apps/admin` | Cloudflare Workers Static Assets | Root `/`; deploy/versions need `-c apps/admin/wrangler.toml` |
+| `apps/api` | Fly.io `sin` | `apps/api/Dockerfile` + `fly.toml`; GitHub Actions `deploy-api.yml` on push to `main` |
 
-SPA fallback: `public/_redirects` → `/* /index.html 200`.
+Full Cloudflare dashboard settings: `Plans/10-phase-0-foundation.md`. SPA fallback is `not_found_handling` in each `wrangler.toml` — do not ship `public/_redirects`.
 
 ## Phase status
 

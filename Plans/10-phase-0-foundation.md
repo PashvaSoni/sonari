@@ -4,6 +4,8 @@
 **Duration:** ~1 week
 **Goal:** every subsequent phase drops code into a working skeleton.
 
+> **Change note (2026-08-23):** Workers Builds Root = `/`. Deploy **and** Versions must pass `-c apps/<app>/wrangler.toml`. Bare `npx wrangler versions upload` fails.
+
 > **Change note (2026-07-04):** Monorepo scaffolded at **repo root** (not a nested `sonari/` folder). Package scope `@sonari/*`. Sentry uses `@sentry/react` + `@sentry/node` (Vite), not `@sentry/nextjs`. pnpm 11 requires `allowBuilds` in `pnpm-workspace.yaml` (esbuild approved).
 
 ---
@@ -52,14 +54,14 @@
 
 Create **two** Workers (Git-connected), both on `PashvaSoni/sonari`, branch `main`. Config files: `apps/store/wrangler.toml`, `apps/admin/wrangler.toml`.
 
-> **Change note (2026-08-23):** Monorepo Workers Builds **must** set **Root directory** to `apps/store` / `apps/admin` (Cloudflare [advanced setups](https://developers.cloudflare.com/workers/ci-cd/builds/advanced-setups/)). Empty root + default `npx wrangler versions upload` fails — wrangler looks for config/`dist` in cwd and finds neither. Preview builds use the **Non-production branch deploy command** (defaults to `versions upload`); production uses **Deploy command** (`deploy`). Set both.
+> **Change note (2026-08-23):** Root = `/` (pnpm workspace). Deploy **and** non-prod Versions both need `-c apps/<app>/wrangler.toml`. Bare `versions upload` fails.
 
 | Setting | Store (`sonari-store`) | Admin (`sonari-admin`) |
 |---|---|---|
-| **Root directory** | `apps/store` | `apps/admin` |
-| Build command | `cd ../.. && pnpm install --frozen-lockfile && pnpm turbo run build --filter=@sonari/store` | `cd ../.. && pnpm install --frozen-lockfile && pnpm turbo run build --filter=@sonari/admin` |
-| Deploy command (production branch) | `npx wrangler deploy` | `npx wrangler deploy` |
-| Non-production branch deploy command | `npx wrangler versions upload` | `npx wrangler versions upload` |
+| **Root directory** | `/` | `/` |
+| Build command | `pnpm install --frozen-lockfile && pnpm turbo run build --filter=@sonari/store` | `pnpm install --frozen-lockfile && pnpm turbo run build --filter=@sonari/admin` |
+| Deploy command (production branch) | `npx wrangler deploy -c apps/store/wrangler.toml` | `npx wrangler deploy -c apps/admin/wrangler.toml` |
+| Non-production branch deploy command | `npx wrangler versions upload -c apps/store/wrangler.toml` | `npx wrangler versions upload -c apps/admin/wrangler.toml` |
 | Custom domain (in `wrangler.toml`) | `app.sonari.shop` | `admin.sonari.shop` |
 
 `workers_dev = false` — deploy uses custom domains only (no `workers.dev` registration required). Zone `sonari.shop` must be **Active** on the same Cloudflare account.
@@ -185,9 +187,7 @@ Local scripts: `pnpm dev:store`, `pnpm dev:admin`, `pnpm dev:api`, `pnpm build`,
 
 ## Changelog
 
-- **2026-08-23:** Workers Builds monorepo fix — Root directory `apps/store` / `apps/admin` so default `wrangler versions upload` finds config; removed unused `cf:deploy:*` scripts. Supersedes empty-root + `-c` dashboard-only approach.
-- **2026-08-23:** Cloudflare deploy via `pnpm cf:deploy:store` / `pnpm cf:deploy:admin` (must pass `-c`; bare `wrangler versions upload` fails).
-- **2026-08-23:** Cloudflare deploy must use `-c apps/store|admin/wrangler.toml` — bare `wrangler versions upload` misses assets config.
+- **2026-08-23:** Workers Builds — Root `/` + `wrangler -c apps/<app>/wrangler.toml` on Deploy **and** Versions. Bare `versions upload` fails. Supersedes per-app Root directory and removed unused `cf:*` package scripts.
 - **2026-07-04:** Scaffolded monorepo at repo root; local build/test/lint/typecheck green. Acceptance split into local-done vs credentials-pending.
 - **2026-07-04:** GitHub remote `PashvaSoni/sonari`, branch `main`, CODEOWNERS set.
 - **2026-07-04:** Supabase project `vewfxwzyialmlsaljafz` env wired; `@sonari/db` clients added; probe migration applied remotely.
