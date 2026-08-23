@@ -1,7 +1,9 @@
 # 17 — UI Components Library & Reuse Rules
 
-**Last-updated:** 2026-07-03
+**Last-updated:** 2026-08-24
 **Prereq:** [00-MASTER-PLAN.md](./00-MASTER-PLAN.md), [15-coding-standards.md](./15-coding-standards.md)
+
+> **Change note (2026-08-24):** Shipped AppShell, PageHeader, SearchInput, EmptyState, StatusPill, Badge, Toast (sonner), Lucide icon barrel; Make palette tokens (`gold`, `success`, `warning`, `invoice-canvas`). See `packages/ui/COMPONENTS.md`.
 
 **This is a HARD RULE document.** Every human and AI agent MUST follow the reuse workflow before creating any UI component.
 
@@ -461,3 +463,8 @@ Each of these has:
 ## 15. Migration path if we outgrow shadcn+IndiaCN
 
 Unlikely, but codified: since we OWN the code in `packages/ui`, migrating to another primitive layer (Ariakit, HeadlessUI, etc.) is a `packages/ui`-only change. Apps consuming `@sonari/ui` don't change. This is the whole point of the abstraction.
+
+## Changelog
+
+- **2026-08-24:** AppShell, PageHeader, SearchInput, EmptyState, StatusPill, Badge, Toast/sonner, icon barrel; Make palette CSS tokens.
+

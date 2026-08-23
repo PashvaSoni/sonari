@@ -1,20 +1,41 @@
 :root {
+  /* Surfaces — Make #FBFAF7 / white */
   --background: 40 33% 98%;
-  --foreground: 24 10% 10%;
+  --foreground: 222 47% 11%;
   --card: 0 0% 100%;
-  --card-foreground: 24 10% 10%;
-  --primary: 36 45% 35%;
+  --card-foreground: 222 47% 11%;
+
+  /* Near-black primary CTAs (Make bg-foreground buttons) */
+  --primary: 222 47% 11%;
   --primary-foreground: 40 33% 98%;
-  --secondary: 40 20% 92%;
-  --secondary-foreground: 24 10% 20%;
+
+  --secondary: 40 20% 94%;
+  --secondary-foreground: 222 47% 11%;
+
   --muted: 40 15% 94%;
-  --muted-foreground: 25 5% 45%;
-  --accent: 40 20% 92%;
-  --accent-foreground: 24 10% 20%;
+  --muted-foreground: 215 16% 47%;
+
+  --accent: 40 20% 94%;
+  --accent-foreground: 222 47% 11%;
+
+  /* Muted gold accent — Make #D4A257 */
+  --gold: 38 58% 59%;
+  --gold-foreground: 222 47% 11%;
+
+  --success: 142 76% 36%;
+  --success-foreground: 0 0% 100%;
+  --warning: 38 92% 50%;
+  --warning-foreground: 222 47% 11%;
+
   --destructive: 0 72% 51%;
   --destructive-foreground: 0 0% 100%;
-  --border: 30 10% 88%;
-  --input: 30 10% 88%;
-  --ring: 36 45% 35%;
+
+  --border: 220 13% 91%;
+  --input: 220 13% 91%;
+  --ring: 38 58% 59%;
+
+  /* Invoice preview canvas — Make #e5e5e5 */
+  --invoice-canvas: 0 0% 90%;
+
   --radius: 0.5rem;
 }

@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 @import './tokens.css';
 
 @tailwind base;
@@ -16,10 +17,31 @@
       ui-sans-serif,
       system-ui,
       -apple-system,
-      Segoe UI,
+      'Segoe UI',
       Roboto,
       Helvetica,
       Arial,
       sans-serif;
+  }
+}
+
+@layer components {
+  /* Shared invoice inline-edit focus (billing workspace) */
+  .invoice-field {
+    @apply transition-colors;
+  }
+
+  .invoice-field:hover,
+  .invoice-field:focus {
+    background-color: hsl(var(--gold) / 0.08);
+    box-shadow: 0 1px 0 0 hsl(var(--gold));
+    outline: none;
+  }
+}
+
+@layer utilities {
+  .font-mono-nums {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
   }
 }

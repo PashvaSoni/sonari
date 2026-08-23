@@ -1,6 +1,5 @@
 import type { FormEvent, ReactElement } from 'react'
 import { useCallback, useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
 import type {
   Branch,
   CategoriesListResponse,
@@ -8,7 +7,7 @@ import type {
   ItemListItem,
   ItemsListResponse,
 } from '@sonari/types'
-import { Button, Input, Label } from '@sonari/ui'
+import { Button, Input, Label, PageHeader, SearchInput, StatusPill, toast } from '@sonari/ui'
 import { apiFetch } from '../lib/api-client.js'
 
 export function StockPage(): ReactElement {
@@ -18,12 +17,9 @@ export function StockPage(): ReactElement {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null)
   const [query, setQuery] = useState('')
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [message, setMessage] = useState<string | null>(null)
 
   const load = useCallback(async () => {
     setLoading(true)
-    setError(null)
     try {
       const params = new URLSearchParams()
       if (selectedCategory) params.set('category', selectedCategory)
@@ -38,7 +34,7 @@ export function StockPage(): ReactElement {
       setItems(itemsRes.items)
       setBranches(branchesRes.branches)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load stock')
+      toast.error(err instanceof Error ? err.message : 'Failed to load stock')
     } finally {
       setLoading(false)
     }
@@ -50,8 +46,6 @@ export function StockPage(): ReactElement {
 
   async function handleCreateCategory(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault()
-    setMessage(null)
-    setError(null)
     const form = new FormData(event.currentTarget)
     const name = String(form.get('categoryName') ?? '').trim()
     if (!name) return
@@ -62,21 +56,19 @@ export function StockPage(): ReactElement {
         body: JSON.stringify({ name }),
       })
       event.currentTarget.reset()
-      setMessage('Category created')
+      toast.success('Category created')
       await load()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create category')
+      toast.error(err instanceof Error ? err.message : 'Failed to create category')
     }
   }
 
   async function handleCreateItem(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault()
-    setMessage(null)
-    setError(null)
     const form = new FormData(event.currentTarget)
     const defaultBranch = branches.find((b) => b.isDefault) ?? branches[0]
     if (!defaultBranch) {
-      setError('Create a branch before adding stock')
+      toast.error('Create a branch before adding stock')
       return
     }
 
@@ -94,40 +86,24 @@ export function StockPage(): ReactElement {
         }),
       })
       event.currentTarget.reset()
-      setMessage('Item added')
+      toast.success('Item added')
       await load()
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create item')
+      toast.error(err instanceof Error ? err.message : 'Failed to create item')
     }
   }
 
   return (
-    <main className="min-h-screen bg-background px-4 py-8">
-      <div className="mx-auto max-w-5xl">
-        <div className="flex items-center justify-between gap-4">
-          <div>
-            <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              Stock
-            </p>
-            <h1 className="mt-2 text-2xl font-semibold">Categories & items</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Week 2 list view. Full item form lands in Week 3.
-            </p>
-          </div>
-          <Link
-            to="/dashboard"
-            className="text-sm font-medium text-muted-foreground underline-offset-4 hover:underline"
-          >
-            Dashboard
-          </Link>
-        </div>
+    <div className="flex h-full flex-col overflow-auto">
+      <PageHeader
+        title="Stock"
+        description="Week 2 list view. Full item form lands in Week 3."
+      />
 
-        {error ? <p className="mt-4 text-sm text-destructive">{error}</p> : null}
-        {message ? <p className="mt-4 text-sm text-green-700">{message}</p> : null}
-
-        <div className="mt-6 grid gap-6 lg:grid-cols-[240px_1fr]">
+      <div className="mx-auto w-full max-w-5xl px-6 py-8 lg:px-8">
+        <div className="grid gap-6 lg:grid-cols-[240px_1fr]">
           <aside className="space-y-4">
-            <section className="rounded-lg border border-border bg-card p-4 shadow-sm">
+            <section className="rounded-lg border border-border bg-card p-4">
               <h2 className="text-sm font-medium">Categories</h2>
               <button
                 type="button"
@@ -155,7 +131,10 @@ export function StockPage(): ReactElement {
                   </li>
                 ))}
               </ul>
-              <form className="mt-4 space-y-2" onSubmit={handleCreateCategory}>
+              <form
+                className="mt-4 space-y-2"
+                onSubmit={(e) => void handleCreateCategory(e)}
+              >
                 <Label htmlFor="categoryName">New category</Label>
                 <Input id="categoryName" name="categoryName" placeholder="Necklaces" required />
                 <Button type="submit" className="w-full" variant="secondary">
@@ -166,7 +145,7 @@ export function StockPage(): ReactElement {
           </aside>
 
           <div className="space-y-4">
-            <section className="rounded-lg border border-border bg-card p-4 shadow-sm">
+            <section className="rounded-lg border border-border bg-card p-4">
               <form
                 className="flex flex-wrap gap-2"
                 onSubmit={(e) => {
@@ -174,12 +153,12 @@ export function StockPage(): ReactElement {
                   void load()
                 }}
               >
-                <Input
-                  name="q"
+                <SearchInput
+                  containerClassName="min-w-[200px] flex-1"
                   placeholder="Search name, SKU, barcode"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  className="min-w-[200px] flex-1"
+                  aria-label="Search stock"
                 />
                 <Button type="submit" variant="secondary">
                   Search
@@ -187,9 +166,12 @@ export function StockPage(): ReactElement {
               </form>
             </section>
 
-            <section className="rounded-lg border border-border bg-card p-4 shadow-sm">
+            <section className="rounded-lg border border-border bg-card p-4">
               <h2 className="text-sm font-medium">Quick add item</h2>
-              <form className="mt-3 grid gap-3 sm:grid-cols-2" onSubmit={handleCreateItem}>
+              <form
+                className="mt-3 grid gap-3 sm:grid-cols-2"
+                onSubmit={(e) => void handleCreateItem(e)}
+              >
                 <div className="space-y-2 sm:col-span-2">
                   <Label htmlFor="itemName">Name</Label>
                   <Input id="itemName" name="itemName" required placeholder="22K Gold Chain 8gm" />
@@ -226,7 +208,7 @@ export function StockPage(): ReactElement {
               </form>
             </section>
 
-            <section className="rounded-lg border border-border bg-card shadow-sm">
+            <section className="rounded-lg border border-border bg-card">
               {loading ? (
                 <p className="p-6 text-sm text-muted-foreground">Loading…</p>
               ) : items.length === 0 ? (
@@ -247,14 +229,18 @@ export function StockPage(): ReactElement {
                       {items.map((item) => (
                         <tr key={item.id} className="border-b border-border last:border-0">
                           <td className="px-4 py-3 font-medium">{item.name}</td>
-                          <td className="px-4 py-3 tabular-nums">{item.sku}</td>
+                          <td className="px-4 py-3 font-mono tabular-nums">{item.sku}</td>
                           <td className="px-4 py-3 capitalize">
                             {item.metal}
                             {item.purity ? ` ${item.purity}` : ''}
                           </td>
-                          <td className="px-4 py-3 tabular-nums">{item.netWeight ?? '—'}</td>
-                          <td className="px-4 py-3 capitalize">
-                            {item.status.replace('_', ' ')}
+                          <td className="px-4 py-3 font-mono tabular-nums">
+                            {item.netWeight ?? '—'}
+                          </td>
+                          <td className="px-4 py-3">
+                            <StatusPill tone="muted">
+                              {item.status.replace('_', ' ')}
+                            </StatusPill>
                           </td>
                         </tr>
                       ))}
@@ -266,6 +252,6 @@ export function StockPage(): ReactElement {
           </div>
         </div>
       </div>
-    </main>
+    </div>
   )
 }
