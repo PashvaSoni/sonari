@@ -2,6 +2,11 @@
 # Custom domain: admin.sonari.shop (ADR-008)
 # Zone sonari.shop must be Active on this Cloudflare account.
 #
+# Cloudflare Workers Builds (repo root empty):
+#   Build:  pnpm install --frozen-lockfile && pnpm turbo run build --filter=@sonari/admin
+#   Deploy: npx wrangler deploy -c apps/admin/wrangler.toml
+#   (or:    npx wrangler versions upload -c apps/admin/wrangler.toml)
+#
 # Build watch paths (dashboard → Settings → Build) — include:
 #   apps/admin/**, packages/ui/**, packages/config/**
 #   package.json, pnpm-lock.yaml, pnpm-workspace.yaml, turbo.json

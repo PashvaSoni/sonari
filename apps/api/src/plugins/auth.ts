@@ -1,5 +1,4 @@
 import type { FastifyInstance } from 'fastify'
-import { config } from '../config/env.js'
 import { UnauthorizedError } from '../lib/errors.js'
 import { verifySupabaseJwt } from '../lib/jwt.js'
 import type { MembershipRole } from '@sonari/types'

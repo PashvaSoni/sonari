@@ -2,8 +2,13 @@
 # Custom domain: app.sonari.shop (ADR-008)
 # Zone sonari.shop must be Active on this Cloudflare account.
 #
+# Cloudflare Workers Builds (repo root empty):
+#   Build:  pnpm install --frozen-lockfile && pnpm turbo run build --filter=@sonari/store
+#   Deploy: npx wrangler deploy -c apps/store/wrangler.toml
+#   (or:    npx wrangler versions upload -c apps/store/wrangler.toml)
+#
 # Build watch paths (dashboard → Settings → Build) — include:
-#   apps/store/**, packages/ui/**, packages/config/**
+#   apps/store/**, packages/ui/**, packages/config/**, packages/types/**, packages/db/**
 #   package.json, pnpm-lock.yaml, pnpm-workspace.yaml, turbo.json
 # Exclude: Plans/**, apps/admin/**, apps/api/**
 
