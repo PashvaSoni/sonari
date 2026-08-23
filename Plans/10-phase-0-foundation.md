@@ -4,6 +4,8 @@
 **Duration:** ~1 week
 **Goal:** every subsequent phase drops code into a working skeleton.
 
+> **Change note (2026-08-23):** API Dockerfile / Fly deploy path-filter include `packages/db` (`@sonari/db` is a runtime dep of `@sonari/api`).
+
 > **Change note (2026-08-23):** Workers Builds Root = `/`. Deploy **and** Versions must pass `-c apps/<app>/wrangler.toml`. Bare `npx wrangler versions upload` fails.
 
 > **Change note (2026-07-04):** Monorepo scaffolded at **repo root** (not a nested `sonari/` folder). Package scope `@sonari/*`. Sentry uses `@sentry/react` + `@sentry/node` (Vite), not `@sentry/nextjs`. pnpm 11 requires `allowBuilds` in `pnpm-workspace.yaml` (esbuild approved).
@@ -90,11 +92,24 @@ So a change under `apps/admin` does **not** redeploy store (and vice versa). Con
 | `NODE_VERSION` | `22` |
 | `VITE_SUPABASE_URL` | `https://vewfxwzyialmlsaljafz.supabase.co` |
 | `VITE_SUPABASE_ANON_KEY` | *(anon key from Supabase — not service_role)* |
-| `VITE_API_URL` | `http://localhost:3001` until Fly.io is live |
+| `VITE_API_URL` | **Must** be `https://sonari-api.fly.dev` on Production (and Preview if testing against Fly). `http://localhost:3001` only for local `pnpm dev`. Wrong value → browser "Failed to fetch" / empty onboarding store name. |
 | `VITE_SENTRY_DSN` | *(empty until Sentry)* |
 
 SPA routing: `not_found_handling = "single-page-application"` in each `wrangler.toml`.
 Do **not** ship `public/_redirects` — Workers rejects `/* /index.html 200` as an infinite loop when SPA handling is enabled.
+
+#### Supabase Auth URL configuration (required for email confirm)
+
+Dashboard: **Authentication → URL Configuration**
+
+| Setting | Value |
+|---|---|
+| **Site URL** | `https://app.sonari.shop` |
+| **Redirect URLs** (one per line) | `https://app.sonari.shop/**` |
+| | `http://localhost:5173/**` |
+| | `http://localhost:5174/**` |
+
+Signup passes `emailRedirectTo = {origin}/login`. If Site URL stays `http://localhost:3000`, confirm links open localhost and look “broken” in production.
 
 ### Domain `sonari.shop` (ADR-008)
 
@@ -116,8 +131,21 @@ App: `sonari-api` · region `sin` (ADR-009; bom when capacity returns) · hostna
 ```bash
 fly auth login
 fly apps create sonari-api   # skip if exists
-fly secrets set SUPABASE_URL=... SUPABASE_SERVICE_ROLE_KEY=... -a sonari-api
+fly secrets set `
+  SUPABASE_URL=... `
+  SUPABASE_ANON_KEY=... `
+  SUPABASE_SERVICE_ROLE_KEY=... `
+  CORS_ORIGINS=https://app.sonari.shop,https://admin.sonari.shop `
+  -a sonari-api
 ```
+
+| Fly secret | Required | Source |
+|---|---|---|
+| `SUPABASE_URL` | Yes | Supabase → Project Settings → API → Project URL |
+| `SUPABASE_ANON_KEY` | Yes | Same page → `anon` `public` key (RLS request clients) |
+| `SUPABASE_SERVICE_ROLE_KEY` | Yes | Same page → `service_role` (server only; never ship to browser) |
+| `CORS_ORIGINS` | Yes (prod) | `https://app.sonari.shop,https://admin.sonari.shop` |
+| `REDIS_URL` / `SENTRY_DSN` | Optional | Phase 0+ queues / error reporting |
 
 **GitHub Actions** — `.github/workflows/deploy-api.yml`
 
@@ -187,6 +215,10 @@ Local scripts: `pnpm dev:store`, `pnpm dev:admin`, `pnpm dev:api`, `pnpm build`,
 
 ## Changelog
 
+- **2026-08-23:** Prod store bundle was baked with `VITE_API_URL=localhost:3001` → onboarding Failed to fetch; document CF env must be Fly URL + redeploy.
+- **2026-08-23:** Supabase Auth Site URL / Redirect URLs for `app.sonari.shop` + local Vite; signup `emailRedirectTo` → `/login`.
+- **2026-08-23:** Fly crash loop — `SUPABASE_ANON_KEY` required by RLS plugin; document on Fly secrets + Zod env. Not a port bug.
+- **2026-08-23:** API Dockerfile copies/builds `packages/db`; `deploy-api.yml` watches `packages/db/**`. Document prod `VITE_API_URL` + Fly `CORS_ORIGINS` for store/admin.
 - **2026-08-23:** Workers Builds — Root `/` + `wrangler -c apps/<app>/wrangler.toml` on Deploy **and** Versions. Bare `versions upload` fails. Supersedes per-app Root directory and removed unused `cf:*` package scripts.
 - **2026-07-04:** Scaffolded monorepo at repo root; local build/test/lint/typecheck green. Acceptance split into local-done vs credentials-pending.
 - **2026-07-04:** GitHub remote `PashvaSoni/sonari`, branch `main`, CODEOWNERS set.

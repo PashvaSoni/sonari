@@ -6,6 +6,7 @@ on:
     paths:
       - 'apps/api/**'
       - 'packages/types/**'
+      - 'packages/db/**'
       - 'packages/config/**'
       - 'package.json'
       - 'pnpm-lock.yaml'

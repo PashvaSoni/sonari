@@ -39,13 +39,20 @@ export function OnboardingWizard(): ReactElement {
     setError(null)
 
     const form = new FormData(event.currentTarget)
+    const name = String(form.get('storeName') ?? '').trim() || profile?.name || ''
     const gstin = String(form.get('gstin') ?? '').trim()
+
+    if (!name) {
+      setError('Store name is required')
+      setSubmitting(false)
+      return
+    }
 
     try {
       const updated = await apiFetch<TenantProfile>('/api/v1/store', {
         method: 'PATCH',
         body: JSON.stringify({
-          name: profile?.name,
+          name,
           gstin: gstin || null,
         }),
       })
@@ -155,7 +162,13 @@ export function OnboardingWizard(): ReactElement {
             <form className="space-y-4" onSubmit={handleStoreSubmit}>
               <div className="space-y-2">
                 <Label htmlFor="storeName">Store name</Label>
-                <Input id="storeName" value={profile?.name ?? ''} disabled />
+                <Input
+                  id="storeName"
+                  name="storeName"
+                  defaultValue={profile?.name ?? ''}
+                  required
+                  disabled={Boolean(profile?.name)}
+                />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="gstin">GSTIN (optional)</Label>

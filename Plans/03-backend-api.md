@@ -1,7 +1,9 @@
 # 03 — Backend API (Fastify)
 
-**Last-updated:** 2026-07-05
+**Last-updated:** 2026-08-23
 **Prereq:** [01-architecture.md](./01-architecture.md), [02-data-model.md](./02-data-model.md)
+
+> **Change note (2026-08-23):** Fly `Dockerfile` must copy/build workspace deps of `@sonari/api` (`packages/types`, `packages/db`, `packages/config`).
 
 ---
 
@@ -48,7 +50,8 @@ apps/api/
 │   └── index.ts
 ├── test/
 │   ├── setup.ts
-│   └── helpers.ts             # Test tenant factory
+│   ├── helpers.ts             # Test tenant factory
+│   └── dockerfile.test.ts     # Fly image workspace-dep contract
 ├── Dockerfile
 ├── fly.toml
 └── package.json
@@ -349,7 +352,9 @@ Response `429` with `Retry-After` header.
 
 ## 11. Deployment (Fly.io)
 
-`fly.toml`:
+Monorepo image: build context = **repo root**; `apps/api/Dockerfile` installs with `--filter @sonari/api...` and must COPY `packages/{types,db,config}` (runtime + build). Deploy: `flyctl deploy --config apps/api/fly.toml --dockerfile apps/api/Dockerfile -a sonari-api --ha=false`.
+
+`fly.toml` (see `apps/api/fly.toml` for source of truth):
 ```toml
 app = "sonari-api"
 primary_region = "sin"  # ADR-009; bom when Fly capacity returns
@@ -357,24 +362,16 @@ primary_region = "sin"  # ADR-009; bom when Fly capacity returns
 [build]
   dockerfile = "Dockerfile"
 
-[env]
-  NODE_ENV = "production"
-  PORT = "8080"
-
 [http_service]
-  internal_port = 8080
+  internal_port = 3001
   force_https = true
-  auto_stop_machines = true
+  auto_stop_machines = "stop"
   auto_start_machines = true
-  min_machines_running = 1
-
-[[services.ports]]
-  handlers = ["http", "tls"]
-  port = 443
+  min_machines_running = 0
 ```
 
-- Secrets via `fly secrets set`.
-- `min_machines_running = 1` for warm start (avoid cold start on first bill of the day).
+- Secrets via `fly secrets set` — required: `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `CORS_ORIGINS=https://app.sonari.shop,https://admin.sonari.shop`.
+- `min_machines_running = 0` in Phase 0 (cold start OK); raise to `1` when billing goes live.
 - Scale via `fly scale count 2` when CCU > 100.
 
 ---
@@ -384,3 +381,8 @@ primary_region = "sin"  # ADR-009; bom when Fly capacity returns
 - `GET /health` — Liveness (returns 200 always if process alive)
 - `GET /ready` — Readiness (DB connected, Redis connected)
 - `GET /metrics` — Prometheus format (behind admin token)
+
+## Changelog
+
+- **2026-08-23:** Unit tests — `config/env.test.ts` (co-located); `test/dockerfile.test.ts` (package infra next to Dockerfile).
+- **2026-08-23:** Document Dockerfile workspace packages (`types`/`db`/`config`) + prod `CORS_ORIGINS`; align deploy notes with `apps/api/fly.toml` (port 3001, region sin).
