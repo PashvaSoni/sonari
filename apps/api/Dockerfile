@@ -6,6 +6,7 @@ FROM base AS deps
 COPY package.json pnpm-workspace.yaml pnpm-lock.yaml ./
 COPY apps/api/package.json apps/api/
 COPY packages/types/package.json packages/types/
+COPY packages/db/package.json packages/db/
 COPY packages/config/package.json packages/config/
 RUN pnpm install --frozen-lockfile --filter @sonari/api...
 
@@ -16,9 +17,12 @@ COPY --from=deps /app/packages ./packages
 COPY package.json pnpm-workspace.yaml turbo.json tsconfig.base.json ./
 COPY apps/api ./apps/api
 COPY packages/types ./packages/types
+COPY packages/db ./packages/db
 COPY packages/config ./packages/config
 ENV CI=true
-RUN pnpm --filter @sonari/types build && pnpm --filter @sonari/api build
+RUN pnpm --filter @sonari/types build \
+  && pnpm --filter @sonari/db build \
+  && pnpm --filter @sonari/api build
 # Flatten prod deps — pnpm workspace symlinks break when copied to the runner stage
 RUN pnpm --filter @sonari/api --prod deploy --legacy /prod/api
 RUN test -f /prod/api/dist/index.js && test -d /prod/api/node_modules/fastify

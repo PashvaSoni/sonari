@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { Session, User } from '@supabase/supabase-js'
+import { authEmailRedirectTo } from '../lib/auth-redirect.js'
 import { supabase } from '../lib/supabase.js'
 
 export type AuthState = {
@@ -56,6 +57,7 @@ export async function signUp(email: string, password: string, fullName: string) 
     password,
     options: {
       data: { full_name: fullName },
+      emailRedirectTo: authEmailRedirectTo(window.location.origin),
     },
   })
   if (error) throw error

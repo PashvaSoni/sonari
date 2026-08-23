@@ -6,11 +6,20 @@ const envSchema = z.object({
   HOST: z.string().default('0.0.0.0'),
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']).default('info'),
   SUPABASE_URL: z.string().url(),
+  SUPABASE_ANON_KEY: z.string().min(1),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
   CORS_ORIGINS: z.string().default('http://localhost:5173,http://localhost:5174'),
 })
 
 export type Env = z.infer<typeof envSchema>
+
+/** Split comma-separated CORS origins; trims and drops empties. */
+export function parseCorsOrigins(raw: string): string[] {
+  return raw
+    .split(',')
+    .map((origin: string) => origin.trim())
+    .filter(Boolean)
+}
 
 function loadEnv(): Env {
   const parsed = envSchema.safeParse(process.env)
@@ -26,5 +35,5 @@ const env = loadEnv()
 export const config = {
   ...env,
   isDev: env.NODE_ENV === 'development',
-  corsOrigins: env.CORS_ORIGINS.split(',').map((o: string) => o.trim()).filter(Boolean),
+  corsOrigins: parseCorsOrigins(env.CORS_ORIGINS),
 }

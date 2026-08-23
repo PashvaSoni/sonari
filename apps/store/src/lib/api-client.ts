@@ -33,10 +33,18 @@ export async function apiFetch<T>(
     headers.set('Authorization', `Bearer ${token}`)
   }
 
-  const response = await fetch(`${env.VITE_API_URL}${path}`, {
-    ...init,
-    headers,
-  })
+  let response: Response
+  try {
+    response = await fetch(`${env.VITE_API_URL}${path}`, {
+      ...init,
+      headers,
+    })
+  } catch {
+    throw new ApiClientError(
+      'NETWORK_ERROR',
+      `Cannot reach API (${env.VITE_API_URL}). Set Cloudflare VITE_API_URL to https://sonari-api.fly.dev and redeploy the store.`,
+    )
+  }
 
   if (!response.ok) {
     const json: unknown = await response.json().catch(() => null)

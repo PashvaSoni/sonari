@@ -9,11 +9,6 @@ declare module 'fastify' {
 }
 
 export async function supabasePlugin(app: FastifyInstance): Promise<void> {
-  const anonKey = process.env.SUPABASE_ANON_KEY
-  if (!anonKey) {
-    throw new Error('SUPABASE_ANON_KEY is required for request-scoped RLS clients')
-  }
-
   app.decorateRequest('db', undefined as unknown as ReturnType<typeof createAnonClient>)
 
   app.addHook('preHandler', async (request) => {
@@ -21,7 +16,7 @@ export async function supabasePlugin(app: FastifyInstance): Promise<void> {
       return
     }
 
-    request.db = createAnonClient(config.SUPABASE_URL, anonKey, {
+    request.db = createAnonClient(config.SUPABASE_URL, config.SUPABASE_ANON_KEY, {
       auth: {
         persistSession: false,
         autoRefreshToken: false,
