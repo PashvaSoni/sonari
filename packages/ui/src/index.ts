@@ -1,2 +1,5 @@
 export { Button, type ButtonProps } from './components/primitives/Button.js'
+export { Input, type InputProps } from './components/primitives/Input.js'
+export { Label, type LabelProps } from './components/primitives/Label.js'
+export { AuthLayout, type AuthLayoutProps } from './components/layouts/AuthLayout.js'
 export { cn } from './lib/cn.js'

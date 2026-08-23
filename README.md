@@ -66,16 +66,21 @@ Or all at once: `pnpm dev`
 
 | Surface | Host | Notes |
 |---------|------|--------|
-| `apps/store` | Cloudflare Pages (or Vercel) | Build: `pnpm --filter @sonari/store build`, output `apps/store/dist` |
-| `apps/admin` | Cloudflare Pages (or Vercel) | Build: `pnpm --filter @sonari/admin build`, output `apps/admin/dist` |
-| `apps/api` | Fly.io `bom` | `apps/api/Dockerfile` + `fly.toml`; GitHub Actions `deploy-api.yml` on push to `main` |
+| `apps/store` | Cloudflare Workers Static Assets | Root `/`; deploy/versions need `-c apps/store/wrangler.toml` |
+| `apps/admin` | Cloudflare Workers Static Assets | Root `/`; deploy/versions need `-c apps/admin/wrangler.toml` |
+| `apps/api` | Fly.io `sin` | `apps/api/Dockerfile` + `fly.toml`; GitHub Actions `deploy-api.yml` on push to `main` |
 
-SPA fallback: `public/_redirects` → `/* /index.html 200`.
+Full Cloudflare dashboard settings: `Plans/10-phase-0-foundation.md`. SPA fallback is `not_found_handling` in each `wrangler.toml` — do not ship `public/_redirects`.
 
 ## Phase status
 
-**Phase 0 — Foundation** (in progress): monorepo skeleton, login shells, `/health`, CI files. Details and acceptance checkboxes live in `Plans/10-phase-0-foundation.md`.
+**Phase 0 — Foundation** complete locally. **Phase 1 — MVP** Week 1 in progress (auth + onboarding). Details in `Plans/10-phase-0-foundation.md` and `Plans/11-phase-1-mvp.md`.
 
-Still needs your accounts: Supabase (Mumbai), GitHub remote, Cloudflare/Vercel, Fly.io, Sentry DSNs.
+Apply new migrations to your linked Supabase project:
+
+```bash
+mise trust .\mise.toml
+mise exec -- supabase db push
+```
 
 When code diverges from plans, agents update `Plans/` in the same change (see `.cursor/rules/sonari-plans-sync.mdc`).

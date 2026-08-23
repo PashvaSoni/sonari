@@ -5,7 +5,10 @@ Search this file before creating any UI component. See `Plans/17-ui-components.m
 | Component | Path | Notes |
 |-----------|------|-------|
 | `Button` | `src/components/primitives/Button.tsx` | primary / secondary / ghost |
+| `Input` | `src/components/primitives/Input.tsx` | text input primitive |
+| `Label` | `src/components/primitives/Label.tsx` | form label |
+| `AuthLayout` | `src/components/layouts/AuthLayout.tsx` | centered auth card shell |
 
 ## Changelog
 
-- **2026-07-04:** Phase 0 — `Button` scaffold.
+- **2026-07-06:** Phase 1 Week 1 — `Input`, `Label`, `AuthLayout`.

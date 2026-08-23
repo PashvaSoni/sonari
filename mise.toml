@@ -1,0 +1,6 @@
+# Tool versions for local dev. Run `mise install` once after clone.
+# Migrations: mise exec -- supabase migration new <snake_name>
+
+[tools]
+node = "22"
+supabase = "2.109.0"
