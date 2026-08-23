@@ -50,6 +50,8 @@ pnpm dev:admin   # http://localhost:5174
 pnpm dev:api     # http://localhost:3001  → GET /health
 ```
 
+API loads `apps/api/.env` automatically in non-production (`src/load-local-env.ts`). Fill Supabase keys before `pnpm dev:api`.
+
 Or all at once: `pnpm dev`
 
 ## Scripts

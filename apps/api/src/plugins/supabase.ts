@@ -1,5 +1,6 @@
 import { createAnonClient } from '@sonari/db'
-import type { FastifyInstance } from 'fastify'
+import type { FastifyPluginAsync } from 'fastify'
+import fp from 'fastify-plugin'
 import { config } from '../config/env.js'
 
 declare module 'fastify' {
@@ -8,7 +9,7 @@ declare module 'fastify' {
   }
 }
 
-export async function supabasePlugin(app: FastifyInstance): Promise<void> {
+const supabasePluginImpl: FastifyPluginAsync = async (app) => {
   app.decorateRequest('db', undefined as unknown as ReturnType<typeof createAnonClient>)
 
   app.addHook('preHandler', async (request) => {
@@ -29,3 +30,5 @@ export async function supabasePlugin(app: FastifyInstance): Promise<void> {
     })
   })
 }
+
+export const supabasePlugin = fp(supabasePluginImpl, { name: 'sonari-supabase' })

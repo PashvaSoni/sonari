@@ -371,6 +371,7 @@ primary_region = "sin"  # ADR-009; bom when Fly capacity returns
 ```
 
 - Secrets via `fly secrets set` — required: `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `CORS_ORIGINS=https://app.sonari.shop,https://admin.sonari.shop`.
+- Plugins that decorate the request or set global hooks/error handlers **must** use `fastify-plugin` (otherwise Fastify encapsulation skips them for app routes — browsers then see CORS-opaque 401 as "Failed to fetch"). CORS headers are applied on every reply including errors (same idea as Posport edge `corsHeaders` on every `Response`).
 - `min_machines_running = 0` in Phase 0 (cold start OK); raise to `1` when billing goes live.
 - Scale via `fly scale count 2` when CCU > 100.
 
@@ -384,5 +385,7 @@ primary_region = "sin"  # ADR-009; bom when Fly capacity returns
 
 ## Changelog
 
+- **2026-08-23:** `TenantProfileSchema.trialEndsAt` accepts Supabase offset timestamps; service normalizes to ISO-Z; Zod errors → 400; DB/dev 500s surface real message.
+- **2026-08-23:** CORS/auth plugins wrapped with `fastify-plugin`; Posport-style CORS headers on every reply (incl. 401). Fixes browser "Failed to fetch" on onboarding.
 - **2026-08-23:** Unit tests — `config/env.test.ts` (co-located); `test/dockerfile.test.ts` (package infra next to Dockerfile).
 - **2026-08-23:** Document Dockerfile workspace packages (`types`/`db`/`config`) + prod `CORS_ORIGINS`; align deploy notes with `apps/api/fly.toml` (port 3001, region sin).

@@ -4,6 +4,8 @@
 **Duration:** 8–10 weeks
 **Goal:** a store owner can sign up, set up their store, add stock, and create real bills — offline, GST-compliant, with HUID.
 
+> **Change note (2026-08-23):** Email-confirmed users finish tenant bootstrap on `/signup` (store name prefilled from signup; read-only when known). Onboarding step 1 is GSTIN-only.
+
 > **Change note (2026-08-23):** Email confirm redirect — Site URL `https://app.sonari.shop`; signup sets `emailRedirectTo` to `{origin}/login`.
 
 > **Change note (2026-08-23):** Week 1 polish — branch PATCH, rates page + history API. Week 2 kickoff: categories + items (awaiting migration scaffolds).
@@ -151,6 +153,8 @@
 
 ## Changelog
 
+- **2026-08-23:** Onboarding UX — store name once at signup/bootstrap; finish-setup prefills read-only; wizard step 1 GSTIN-only.
+- **2026-08-23:** Store bootstrap gap — `/signup` finish-setup for email-confirmed users; `ProtectedRoute` requires bootstrap before onboarding/app routes.
 - **2026-08-23:** Signup `emailRedirectTo` → `{origin}/login`; document Supabase Site URL / Redirect URLs for `app.sonari.shop`.
 - **2026-08-23:** Week 2 — migrations `inventory_categories` / `inventory_items`; categories CRUD + items list/create API; store `/stock` page. Full item form + images Week 3.
 - **2026-08-23:** Week 1 polish — `PATCH /store/branches/:id`, `GET /rates/history`, store `/rates` page. Week 2 pending migrations: `inventory_categories`, `inventory_items`.

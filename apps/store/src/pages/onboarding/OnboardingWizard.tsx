@@ -14,11 +14,13 @@ export function OnboardingWizard(): ReactElement {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [profile, setProfile] = useState<TenantProfile | null>(null)
+  const [gstin, setGstin] = useState('')
 
   useEffect(() => {
     apiFetch<TenantProfile>('/api/v1/store')
       .then((data) => {
         setProfile(data)
+        setGstin(data.gstin ?? '')
         if (data.onboarding.hasRates) {
           navigate('/dashboard')
           return
@@ -35,25 +37,20 @@ export function OnboardingWizard(): ReactElement {
 
   async function handleStoreSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault()
+    if (!profile) {
+      return
+    }
+
     setSubmitting(true)
     setError(null)
 
-    const form = new FormData(event.currentTarget)
-    const name = String(form.get('storeName') ?? '').trim() || profile?.name || ''
-    const gstin = String(form.get('gstin') ?? '').trim()
-
-    if (!name) {
-      setError('Store name is required')
-      setSubmitting(false)
-      return
-    }
+    const trimmedGstin = gstin.trim()
 
     try {
       const updated = await apiFetch<TenantProfile>('/api/v1/store', {
         method: 'PATCH',
         body: JSON.stringify({
-          name,
-          gstin: gstin || null,
+          gstin: trimmedGstin || null,
         }),
       })
       setProfile(updated)
@@ -137,13 +134,26 @@ export function OnboardingWizard(): ReactElement {
     )
   }
 
+  if (!profile) {
+    return (
+      <main className="flex min-h-screen items-center justify-center px-4">
+        <div className="max-w-md text-center">
+          <p className="text-sm text-destructive">{error ?? 'Could not load your store profile.'}</p>
+          <Button className="mt-4" variant="secondary" onClick={() => window.location.reload()}>
+            Try again
+          </Button>
+        </div>
+      </main>
+    )
+  }
+
   return (
     <main className="min-h-screen bg-background px-4 py-8">
       <div className="mx-auto w-full max-w-lg">
         <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
           Store setup
         </p>
-        <h1 className="mt-2 text-2xl font-semibold">{profile?.name ?? 'Your store'}</h1>
+        <h1 className="mt-2 text-2xl font-semibold">{profile.name}</h1>
         <div className="mt-4 flex gap-2">
           {STEPS.map((label, index) => (
             <div
@@ -160,22 +170,16 @@ export function OnboardingWizard(): ReactElement {
         <section className="mt-6 rounded-lg border border-border bg-card p-6 shadow-sm">
           {step === 0 ? (
             <form className="space-y-4" onSubmit={handleStoreSubmit}>
-              <div className="space-y-2">
-                <Label htmlFor="storeName">Store name</Label>
-                <Input
-                  id="storeName"
-                  name="storeName"
-                  defaultValue={profile?.name ?? ''}
-                  required
-                  disabled={Boolean(profile?.name)}
-                />
-              </div>
+              <p className="text-sm text-muted-foreground">
+                Add your GSTIN if you have one. You can update it later in Settings.
+              </p>
               <div className="space-y-2">
                 <Label htmlFor="gstin">GSTIN (optional)</Label>
                 <Input
                   id="gstin"
                   name="gstin"
-                  defaultValue={profile?.gstin ?? ''}
+                  value={gstin}
+                  onChange={(event) => setGstin(event.target.value)}
                   placeholder="22AAAAA0000A1Z5"
                 />
               </div>
