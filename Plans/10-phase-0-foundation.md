@@ -55,10 +55,10 @@ Create **two** Workers (Git-connected), both on `PashvaSoni/sonari`, branch `mai
 | Setting | Store (`sonari-store`) | Admin (`sonari-admin`) |
 |---|---|---|
 | Build command | `pnpm install --frozen-lockfile && pnpm turbo run build --filter=@sonari/store` | `pnpm install --frozen-lockfile && pnpm turbo run build --filter=@sonari/admin` |
-| Deploy command | `npx wrangler deploy -c apps/store/wrangler.toml` | `npx wrangler deploy -c apps/admin/wrangler.toml` |
+| Deploy command | `pnpm cf:deploy:store` | `pnpm cf:deploy:admin` |
 | Custom domain (in `wrangler.toml`) | `app.sonari.shop` | `admin.sonari.shop` |
 
-> **Change note (2026-08-23):** Deploy **must** pass `-c apps/<app>/wrangler.toml`. Bare `npx wrangler versions upload` fails with “Missing entry-point / assets directory” because the config (and `./dist`) are not at the repo root. If the dashboard uses versioned uploads, use `npx wrangler versions upload -c apps/store/wrangler.toml` (same for admin).
+> **Change note (2026-08-23):** Deploy **must not** be bare `npx wrangler versions upload`. That ignores `apps/*/wrangler.toml` and fails with “Missing entry-point / assets directory”. Use `pnpm cf:deploy:store` / `pnpm cf:deploy:admin` (root `package.json` scripts wrap `wrangler versions upload -c apps/<app>/wrangler.toml`). **Update each Worker separately** in Cloudflare → Settings → Builds → Deploy command — store and admin have different commands. If the build log still shows `Executing user deploy command: npx wrangler versions upload`, the dashboard was not updated yet.
 
 `workers_dev = false` — deploy uses custom domains only (no `workers.dev` registration required). Zone `sonari.shop` must be **Active** on the same Cloudflare account.
 
@@ -183,6 +183,7 @@ Local scripts: `pnpm dev:store`, `pnpm dev:admin`, `pnpm dev:api`, `pnpm build`,
 
 ## Changelog
 
+- **2026-08-23:** Cloudflare deploy via `pnpm cf:deploy:store` / `pnpm cf:deploy:admin` (must pass `-c`; bare `wrangler versions upload` fails).
 - **2026-08-23:** Cloudflare deploy must use `-c apps/store|admin/wrangler.toml` — bare `wrangler versions upload` misses assets config.
 - **2026-07-04:** Scaffolded monorepo at repo root; local build/test/lint/typecheck green. Acceptance split into local-done vs credentials-pending.
 - **2026-07-04:** GitHub remote `PashvaSoni/sonari`, branch `main`, CODEOWNERS set.

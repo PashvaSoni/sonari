@@ -4,8 +4,8 @@
 #
 # Cloudflare Workers Builds (repo root empty):
 #   Build:  pnpm install --frozen-lockfile && pnpm turbo run build --filter=@sonari/store
-#   Deploy: npx wrangler deploy -c apps/store/wrangler.toml
-#   (or:    npx wrangler versions upload -c apps/store/wrangler.toml)
+#   Deploy: pnpm cf:deploy:store
+#   (equiv: npx wrangler versions upload -c apps/store/wrangler.toml)
 #
 # Build watch paths (dashboard → Settings → Build) — include:
 #   apps/store/**, packages/ui/**, packages/config/**, packages/types/**, packages/db/**
