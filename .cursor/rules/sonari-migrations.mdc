@@ -1,0 +1,35 @@
+---
+description: Supabase migrations — user scaffolds via mise; agent never hand-creates timestamp filenames
+alwaysApply: true
+---
+
+# Migration file creation
+
+## Hard rule
+
+**Never** create migration files with hand-invented timestamp prefixes (e.g. `20260706120248_foo.sql`).
+
+**Always** ask the user to scaffold empty files via Supabase CLI through mise:
+
+```powershell
+mise exec -- supabase migration new <snake_case_name>
+```
+
+- `<snake_case_name>` = descriptive slug only — CLI adds the timestamp
+- Files land in `supabase/migrations/` (mirror SQL to `packages/db/migrations/` in the same PR)
+- **Wait** for the user to confirm the file exists before writing SQL
+
+## Agent workflow
+
+1. **Planning:** list every migration slug needed in one message (batch when possible)
+2. **Provide** copy-paste PowerShell commands — one per migration
+3. **Stop** until the user confirms files were created
+4. **Then** write migration SQL (+ `*_rollback.sql` sibling per project convention)
+
+## Example
+
+```powershell
+mise exec -- supabase migration new platform_and_tenant_core
+```
+
+User confirms → agent fills `supabase/migrations/<timestamp>_platform_and_tenant_core.sql`.

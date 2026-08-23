@@ -1,6 +1,6 @@
 # 18 — AI Agent Operating Manual
 
-**Last-updated:** 2026-07-04
+**Last-updated:** 2026-07-06
 **Applies to:** every AI agent (Claude, Cursor, GitHub Copilot, Windsurf, Cody, Aider, or any future model) working on this codebase.
 
 > **This document is your constitution.** If you're an AI agent reading this, you must read it fully before touching any code. If you're a human onboarding an AI, point it here first.
@@ -133,8 +133,20 @@ Read `17-ui-components.md` §3 (the 4-step decision tree). Summary:
 ### 3.4 Before creating ANY database table or column
 
 - Search `02-data-model.md`.
-- Search `packages/db/migrations/` for existing schema.
+- Search `packages/db/migrations/` and `supabase/migrations/` for existing schema.
 - If it doesn't exist, propose migration in `DECISIONS.md` with SQL + RLS policy + rollback SQL.
+
+### 3.5 Migration file scaffolding (human runs CLI)
+
+**Never** create migration files with hand-invented timestamps. Ask the human to scaffold:
+
+```powershell
+mise exec -- supabase migration new <snake_case_name>
+```
+
+- During planning: list **all** migration slugs needed in one message with copy-paste commands.
+- **Wait** until the human confirms files exist, then write SQL (+ rollback sibling).
+- Mirror final SQL to `packages/db/migrations/` in the same PR.
 
 ---
 
@@ -590,6 +602,8 @@ Read `00-MASTER-PLAN.md` + this file + the specific plans your task touches. Bef
 ---
 
 ## Changelog
+
+- **2026-07-06:** §3.5 — migration scaffolding via `mise exec -- supabase migration new <name>`; agent never hand-creates timestamp filenames. Rule: `.cursor/rules/sonari-migrations.mdc`.
 
 - **2026-07-04:** §6 — plan updates are proactive (never wait to be asked). §14 — must report plan deviations (what + why) to the user. Aligns with `.cursor/rules/sonari-plans-sync.mdc`.
 

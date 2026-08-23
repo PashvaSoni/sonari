@@ -23,6 +23,7 @@ Source: `Plans/02-data-model.md`, `Plans/01-architecture.md` §3
 
 ## Migrations
 
+- **Create files:** user runs `mise exec -- supabase migration new <snake_case_name>` — agent never hand-creates timestamp filenames (see `sonari-migrations.mdc`)
 - One concern per migration file
 - Always include rollback path
 - **STOP and ask** before drop/rename of columns with existing data

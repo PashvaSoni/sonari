@@ -57,6 +57,7 @@ Money math not in plan · new library not in stack · plan contradictions · amb
 - No direct `@radix-ui/*` / `lucide-react` / `cmdk` imports in apps — use `@sonari/ui`
 - No new library without ADR · no `.env` commits · no work on `main` · no push to `main`
 - No inventing endpoints/tables — implement plan specs or propose via ADR
+- No hand-created migration timestamps — user runs `mise exec -- supabase migration new <name>`; agent waits, then writes SQL
 - Never trust LLM output for money — validate with `packages/domain`
 
 ## Stack (locked — ADR-001/002/003)

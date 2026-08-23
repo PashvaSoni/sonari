@@ -74,8 +74,13 @@ SPA fallback: `public/_redirects` → `/* /index.html 200`.
 
 ## Phase status
 
-**Phase 0 — Foundation** (in progress): monorepo skeleton, login shells, `/health`, CI files. Details and acceptance checkboxes live in `Plans/10-phase-0-foundation.md`.
+**Phase 0 — Foundation** complete locally. **Phase 1 — MVP** Week 1 in progress (auth + onboarding). Details in `Plans/10-phase-0-foundation.md` and `Plans/11-phase-1-mvp.md`.
 
-Still needs your accounts: Supabase (Mumbai), GitHub remote, Cloudflare/Vercel, Fly.io, Sentry DSNs.
+Apply new migrations to your linked Supabase project:
+
+```bash
+mise trust .\mise.toml
+mise exec -- supabase db push
+```
 
 When code diverges from plans, agents update `Plans/` in the same change (see `.cursor/rules/sonari-plans-sync.mdc`).

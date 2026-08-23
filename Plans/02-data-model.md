@@ -1,6 +1,6 @@
 # 02 — Data Model (Postgres / Supabase)
 
-**Last-updated:** 2026-07-03
+**Last-updated:** 2026-08-23
 **Prereq:** [01-architecture.md](./01-architecture.md)
 
 All tables live in Supabase Postgres. **Every business table has `tenant_id`.** All migrations go in `packages/db/migrations` and are applied via Supabase CLI (`supabase db push`).
@@ -425,9 +425,19 @@ Role-level restrictions (e.g., staff can't delete bills) enforced in **API layer
 
 ## 13. Migration workflow
 
-1. All changes as **timestamped SQL files** in `packages/db/migrations/`.
-2. Local: `supabase db reset` re-applies from scratch (dev only).
-3. Preview PR: GitHub Action runs `supabase db diff` to show delta.
-4. Prod: `supabase db push --linked` (manual, gated by admin approval).
-5. **Never** hand-edit prod DB. All changes via migrations.
-6. Every migration must have a rollback SQL file (`XXX_rollback.sql`).
+1. **Scaffold** empty migration files via CLI (human runs locally):
+   ```powershell
+   mise exec -- supabase migration new <snake_case_name>
+   ```
+   CLI writes timestamped files under `supabase/migrations/`. **Agents must not** invent timestamp prefixes. During planning, list all needed slugs at once; human runs commands and confirms before agent writes SQL.
+2. **Author** SQL in the scaffolded file; **mirror** to `packages/db/migrations/` in the same PR.
+3. Local: `supabase db reset` re-applies from scratch (dev only).
+4. Preview PR: GitHub Action runs `supabase db diff` to show delta.
+5. Prod: `supabase db push --linked` (manual, gated by admin approval).
+6. **Never** hand-edit prod DB. All changes via migrations.
+7. Every migration must have a rollback SQL file (`XXX_rollback.sql`).
+
+## Changelog
+
+- **2026-08-23:** Migrations `20260823070125_inventory_categories` + `20260823070134_inventory_items` (categories tree, items master, RLS).
+- **2026-07-06:** Migrations `20260706123058_platform_and_tenant_core` + `20260706123103_metal_rates` authored (platform/tenant tables + RLS + metal_rates).

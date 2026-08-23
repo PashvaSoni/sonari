@@ -1,48 +1,85 @@
 import type { FormEvent, ReactElement } from 'react'
-import { Button } from '@sonari/ui'
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { AuthLayout, Button, Input, Label } from '@sonari/ui'
+import { signIn } from '../hooks/useAuth.js'
+import { apiFetch } from '../lib/api-client.js'
+import type { AuthSession } from '@sonari/types'
 
 export function LoginPage(): ReactElement {
-  function handleSubmit(event: FormEvent<HTMLFormElement>): void {
+  const navigate = useNavigate()
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+
+  async function handleSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault()
-    // Auth wiring lands in Phase 1 (Supabase Auth).
+    setError(null)
+    setLoading(true)
+
+    const form = new FormData(event.currentTarget)
+    const email = String(form.get('email') ?? '')
+    const password = String(form.get('password') ?? '')
+
+    try {
+      await signIn(email, password)
+      const session = await apiFetch<AuthSession>('/api/v1/auth/session')
+
+      if (!session.bootstrapped) {
+        navigate('/signup')
+        return
+      }
+
+      const store = await apiFetch<{ onboarding: { hasBranch: boolean; hasRates: boolean } }>(
+        '/api/v1/store',
+      )
+
+      if (!store.onboarding.hasBranch || !store.onboarding.hasRates) {
+        navigate('/onboarding')
+        return
+      }
+
+      navigate('/dashboard')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Sign in failed')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-background px-4">
-      <section className="w-full max-w-sm rounded-lg border border-border bg-card p-6 shadow-sm">
-        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          Sonari Store
-        </p>
-        <h1 className="mt-2 text-2xl font-semibold text-foreground">Sign in</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Jewellery billing for your counter. Auth connects in Phase 1.
-        </p>
-        <form className="mt-6 space-y-4" onSubmit={handleSubmit}>
-          <label className="block text-sm">
-            <span className="mb-1 block text-muted-foreground">Email</span>
-            <input
-              type="email"
-              name="email"
-              autoComplete="email"
-              required
-              className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm outline-none ring-ring focus-visible:ring-2"
-            />
-          </label>
-          <label className="block text-sm">
-            <span className="mb-1 block text-muted-foreground">Password</span>
-            <input
-              type="password"
-              name="password"
-              autoComplete="current-password"
-              required
-              className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm outline-none ring-ring focus-visible:ring-2"
-            />
-          </label>
-          <Button type="submit" className="w-full">
-            Continue
-          </Button>
-        </form>
-      </section>
-    </main>
+    <AuthLayout
+      eyebrow="Sonari Store"
+      title="Sign in"
+      description="Jewellery billing for your counter."
+      footer={
+        <>
+          New store?{' '}
+          <Link className="font-medium text-foreground underline-offset-4 hover:underline" to="/signup">
+            Create account
+          </Link>
+        </>
+      }
+    >
+      <form className="space-y-4" onSubmit={handleSubmit}>
+        <div className="space-y-2">
+          <Label htmlFor="email">Email</Label>
+          <Input id="email" name="email" type="email" autoComplete="email" required />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="password">Password</Label>
+          <Input
+            id="password"
+            name="password"
+            type="password"
+            autoComplete="current-password"
+            required
+          />
+        </div>
+        {error ? <p className="text-sm text-destructive">{error}</p> : null}
+        <Button type="submit" className="w-full" disabled={loading}>
+          {loading ? 'Signing in…' : 'Continue'}
+        </Button>
+      </form>
+    </AuthLayout>
   )
 }

@@ -1,35 +1,39 @@
 # 11 — Phase 1: MVP
 
-**Last-updated:** 2026-07-03
+**Last-updated:** 2026-08-23
 **Duration:** 8–10 weeks
 **Goal:** a store owner can sign up, set up their store, add stock, and create real bills — offline, GST-compliant, with HUID.
+
+> **Change note (2026-08-23):** Week 1 polish — branch PATCH, rates page + history API. Week 2 kickoff: categories + items (awaiting migration scaffolds).
+
+> **Change note (2026-07-06):** Phase 1 kicked off. Week 1 slice: auth + onboarding + store profile + first branch.
 
 ---
 
 ## Feature list (locked)
 
 ### Auth & tenancy
-- [ ] Signup (email/password + phone OTP)
-- [ ] Post-signup wizard: store profile, first branch, first rates
+- [x] Signup (email/password; phone OTP deferred)
+- [x] Post-signup wizard: store profile, first branch, first rates
 - [ ] Invite staff/manager by phone or email
 - [ ] Role-based UI hiding (staff can't see cost prices, danger settings)
 
 ### Store setup
-- [ ] Store profile (name, GSTIN, PAN, logo, address)
-- [ ] Branches CRUD (default = 1)
+- [x] Store profile (name, GSTIN; PAN/logo/address in onboarding step 2 branch address)
+- [x] Branches CRUD (default = 1) — create + list + PATCH
 - [ ] Staff CRUD with roles
 - [ ] Invoice template settings (prefix, terms, signature line)
 - [ ] Notification template overrides (bill.created only)
 
 ### Rates
-- [ ] Manual rate entry per metal + purity
-- [ ] History chart (30 days)
+- [x] Manual rate entry per metal + purity
+- [x] History chart (30 days) — list view shipped; Recharts chart deferred
 - [ ] Realtime propagation to open bill sessions
 
 ### Categories & stock
-- [ ] Category tree CRUD
-- [ ] Item CRUD with images
-- [ ] SKU + barcode auto-generation
+- [x] Category tree CRUD — create/list/update/delete API + stock UI create/list (tree parent UI thin)
+- [x] Item CRUD with images — list + quick create (full form + images Week 3)
+- [x] SKU + barcode auto-generation — SKU auto; barcode optional field
 - [ ] HUID capture (BIS validated)
 - [ ] Bulk CSV import
 - [ ] Barcode scanning (camera + USB HID)
@@ -140,3 +144,11 @@
 - [ ] Support email + WhatsApp number configured
 - [ ] Onboarding video (2 minutes)
 - [ ] First 10 pilot tenants signed up manually with concierge call
+
+---
+
+## Changelog
+
+- **2026-08-23:** Week 2 — migrations `inventory_categories` / `inventory_items`; categories CRUD + items list/create API; store `/stock` page. Full item form + images Week 3.
+- **2026-08-23:** Week 1 polish — `PATCH /store/branches/:id`, `GET /rates/history`, store `/rates` page. Week 2 pending migrations: `inventory_categories`, `inventory_items`.
+- **2026-07-06:** Week 1 shipped — migrations `20260706123058_platform_and_tenant_core`, `20260706123103_metal_rates`; API auth bootstrap + store/rates endpoints; store signup/login/onboarding wizard.
