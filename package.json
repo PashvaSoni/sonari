@@ -15,8 +15,6 @@
     "dev:store": "pnpm --filter @sonari/store dev",
     "dev:admin": "pnpm --filter @sonari/admin dev",
     "dev:api": "pnpm --filter @sonari/api dev",
-    "cf:deploy:store": "wrangler versions upload -c apps/store/wrangler.toml",
-    "cf:deploy:admin": "wrangler versions upload -c apps/admin/wrangler.toml",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,css}\""
   },

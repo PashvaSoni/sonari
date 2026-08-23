@@ -1,16 +1,17 @@
-# Cloudflare Workers Static Assets (SPA)
-# Custom domain: admin.sonari.shop (ADR-008)
-# Zone sonari.shop must be Active on this Cloudflare account.
+# Cloudflare Workers Static Assets (SPA) — admin.sonari.shop (ADR-008)
 #
-# Cloudflare Workers Builds (repo root empty):
-#   Build:  pnpm install --frozen-lockfile && pnpm turbo run build --filter=@sonari/admin
-#   Deploy: pnpm cf:deploy:admin
-#   (equiv: npx wrangler versions upload -c apps/admin/wrangler.toml)
+# Workers Builds (monorepo) — set ALL of these in the Cloudflare dashboard:
+#   Root directory:                          apps/admin
+#   Build command:                           cd ../.. && pnpm install --frozen-lockfile && pnpm turbo run build --filter=@sonari/admin
+#   Deploy command:                          npx wrangler deploy
+#   Non-production branch deploy command:    npx wrangler versions upload
 #
-# Build watch paths (dashboard → Settings → Build) — include:
-#   apps/admin/**, packages/ui/**, packages/config/**
-#   package.json, pnpm-lock.yaml, pnpm-workspace.yaml, turbo.json
-# Exclude: Plans/**, apps/store/**, apps/api/**
+# Root directory is required so bare `wrangler versions upload` finds this file + ./dist.
+# Leaving root empty makes preview deploys fail with "Missing entry-point / assets directory".
+#
+# Build watch paths (include): apps/admin/** packages/ui/** packages/config/**
+#   package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json
+# Exclude: Plans/** apps/store/** apps/api/**
 
 name = "sonari-admin"
 compatibility_date = "2025-07-04"
