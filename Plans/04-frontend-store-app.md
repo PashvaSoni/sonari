@@ -1,6 +1,8 @@
 # 04 — Store App (Frontend)
 
-**Last-updated:** 2026-08-23 (updated: switched from Next.js to Vite + React)
+**Last-updated:** 2026-08-24 (updated: switched from Next.js to Vite + React)
+
+> **Change note (2026-08-24):** AppShell + mock Bills UI (`/bills`, `/bills/new` workspace with Live/AI/Voice stubs) from Figma Make. No bills API yet (ADR-010). Palette tokens match Make (`#FBFAF7` / `#0F172A` / `#D4A257`).
 
 > **Change note (2026-08-23):** Store name is collected once at signup/bootstrap; onboarding step 1 is GSTIN-only (name shown in page header).
 
@@ -504,4 +506,5 @@ Configured via `vite-plugin-pwa` in `vite.config.ts` (see §3). Key strategies:
 
 ## Changelog
 
+- **2026-08-24:** Mock bills UI — `AppShell` layout; `/bills` list + `/bills/new` workspace (Live Edit / AI Copilot / Voice stubs); local mock data only (ADR-010). Wire API Week 5+.
 - **2026-08-23:** Signup store name persisted (`sessionStorage` + `user_metadata.store_name`); finish-setup read-only prefilled; onboarding step 1 GSTIN-only.

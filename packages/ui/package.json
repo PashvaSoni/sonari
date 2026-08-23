@@ -10,7 +10,10 @@
     },
     "./styles.css": "./src/styles/globals.css"
   },
-  "files": ["dist", "src/styles"],
+  "files": [
+    "dist",
+    "src/styles"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
@@ -19,6 +22,8 @@
   },
   "dependencies": {
     "clsx": "^2.1.1",
+    "lucide-react": "^0.468.0",
+    "sonner": "^1.7.4",
     "tailwind-merge": "^2.5.5"
   },
   "peerDependencies": {

@@ -1,0 +1,67 @@
+import type { BillListRow, BillUi } from '../types/bill-ui.js'
+
+export const MOCK_BILL_ROWS: BillListRow[] = [
+  {
+    id: '1',
+    no: 'INV-2025-00124',
+    date: '19 Apr 2025',
+    customer: 'Saroj Mandal',
+    items: 2,
+    weight: '3.171 g',
+    total: '₹52,011',
+    paid: '₹52,011',
+    balance: '₹0',
+    status: 'Paid',
+  },
+  {
+    id: '2',
+    no: 'INV-2025-00123',
+    date: '19 Apr 2025',
+    customer: 'Amit Sharma',
+    items: 1,
+    weight: '8.400 g',
+    total: '₹78,450',
+    paid: '₹0',
+    balance: '₹78,450',
+    status: 'Pending',
+  },
+  {
+    id: '3',
+    no: 'INV-2025-00122',
+    date: '18 Apr 2025',
+    customer: 'Priya Das',
+    items: 4,
+    weight: '22.150 g',
+    total: '₹2,14,300',
+    paid: '₹1,00,000',
+    balance: '₹1,14,300',
+    status: 'Partial',
+  },
+]
+
+export const INITIAL_DRAFT_BILL: BillUi = {
+  id: 'new',
+  billNo: 'DOC/K/AGR/192',
+  date: '19/04/2025',
+  customerName: 'Saroj Mandal',
+  customerPhone: '7003282525',
+  type: 'Sale',
+  branch: 'Main Branch',
+  items: [
+    {
+      id: '1',
+      product: 'STUD EARRING 750',
+      purity: '18K',
+      hsn: '71131930',
+      grossWeight: 3.171,
+      netMetalWeight: 3.143,
+      rate: 5446.2,
+      makingCharges: 1126.9,
+      wastage: 0,
+      sgst: 1.5,
+      cgst: 1.5,
+      discount: 405.61,
+    },
+  ],
+  status: 'Draft',
+}

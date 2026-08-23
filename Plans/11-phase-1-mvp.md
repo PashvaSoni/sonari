@@ -1,8 +1,10 @@
 # 11 — Phase 1: MVP
 
-**Last-updated:** 2026-08-23
+**Last-updated:** 2026-08-24
 **Duration:** 8–10 weeks
 **Goal:** a store owner can sign up, set up their store, add stock, and create real bills — offline, GST-compliant, with HUID.
+
+> **Change note (2026-08-24):** Bills **UI shell** (mock list + workspace) shipped ahead of Week 5 API — see ADR-010. Domain/API/PDF still unchecked.
 
 > **Change note (2026-08-23):** Email-confirmed users finish tenant bootstrap on `/signup` (store name prefilled from signup; read-only when known). Onboarding step 1 is GSTIN-only.
 
@@ -49,10 +51,10 @@
 - [ ] Customer metal ledger (basic view)
 
 ### Billing — the crown jewel
-- [ ] Mode picker
-- [ ] Live-edit mode (full functionality)
-- [ ] Chat mode (deterministic Q&A tree, not LLM yet)
-- [ ] Voice mode wireframe stub (Phase 3 wiring)
+- [x] Mode switcher UI (Live / AI Copilot / Voice) — mock workspace; **not** three large mode cards
+- [ ] Live-edit mode (full functionality) — UI mock only; domain + API Week 5
+- [ ] Chat mode (deterministic Q&A tree, not LLM yet) — AI Copilot panel is UI stub
+- [x] Voice mode wireframe stub (Phase 3 wiring)
 - [ ] Bill draft → confirm → PDF
 - [ ] GST split (intra/inter state, composition supported)
 - [ ] HSN + HUID on invoice
@@ -153,6 +155,7 @@
 
 ## Changelog
 
+- **2026-08-24:** Mock bills UI + AppShell (ADR-010); mode switcher + Voice wireframe stubs; Live-edit/API still open.
 - **2026-08-23:** Onboarding UX — store name once at signup/bootstrap; finish-setup prefills read-only; wizard step 1 GSTIN-only.
 - **2026-08-23:** Store bootstrap gap — `/signup` finish-setup for email-confirmed users; `ProtectedRoute` requires bootstrap before onboarding/app routes.
 - **2026-08-23:** Signup `emailRedirectTo` → `{origin}/login`; document Supabase Site URL / Redirect URLs for `app.sonari.shop`.

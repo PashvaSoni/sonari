@@ -180,5 +180,21 @@ Alternatives considered:
 
 ---
 
+## ADR-010: Ship mock Bills UI ahead of Week 5 API
+Date: 2026-08-24
+Author: agent / user
+Status: Accepted
+Context: Figma Make billing workspace is ready; Phase 1 Week 5+ bills API, domain math, and customers are not. Waiting blocks design validation of the flagship screen.
+Decision: Ship store `/bills` + `/bills/new` with local mock data, AppShell, and UI stubs for AI Copilot / Voice. No `bills` migrations or `/api/v1/bills*` in this change. Invoice totals use display-only JS numbers with an explicit comment; real Decimal math stays Week 5+ in `packages/domain/billing`.
+Consequences:
+  - `04-frontend-store-app.md`, `11-phase-1-mvp.md`, `17-ui-components.md`, `packages/ui`
+  - Agents must not treat mock totals as billing truth
+  - Week 5 work replaces mock with API + domain; remove `mock-bills.ts` when list is live
+Alternatives considered:
+  - Full bills API now: rejected — jumps weeks 4–6 (customers + migrations + domain)
+  - Wait for Week 5: rejected — user prioritized UI from Figma Make
+
+---
+
 
 
