@@ -17,7 +17,7 @@ export const TenantProfileSchema = z.object({
   country: z.string(),
   timezone: z.string(),
   currency: z.string(),
-  trialEndsAt: z.string().datetime(),
+  trialEndsAt: z.string().datetime({ offset: true }),
   onboarding: OnboardingStatusSchema,
 })
 

@@ -1,4 +1,7 @@
 export class AppError extends Error {
+  /** Fastify native serializer looks for `statusCode`. */
+  readonly statusCode: number
+
   constructor(
     public readonly code: string,
     public readonly status: number,
@@ -6,7 +9,9 @@ export class AppError extends Error {
     public readonly details?: unknown,
   ) {
     super(message)
-    this.name = 'AppError'
+    this.name = new.target.name
+    this.statusCode = status
+    Object.setPrototypeOf(this, new.target.prototype)
   }
 }
 

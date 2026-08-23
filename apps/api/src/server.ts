@@ -14,8 +14,8 @@ export async function buildServer(): Promise<FastifyInstance> {
     trustProxy: true,
   })
 
-  await app.register(errorsPlugin)
   await app.register(corsPlugin)
+  await app.register(errorsPlugin)
   await app.register(authPlugin)
   await app.register(supabasePlugin)
 

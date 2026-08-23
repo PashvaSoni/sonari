@@ -8,6 +8,7 @@ import type {
   UpdateBranch,
   UpdateStoreProfile,
 } from '@sonari/types'
+import { throwIfDbError } from '../../lib/db-error.js'
 import { NotFoundError } from '../../lib/errors.js'
 import { serviceDb } from '../../plugins/service-db.js'
 import { assertOwnerOrManager, assertTenant } from '../auth/service.js'
@@ -66,12 +67,12 @@ function mapRate(row: RateRow): MetalRate {
     metal: row.metal as MetalRate['metal'],
     purity: String(row.purity),
     ratePerGram: Number(row.rate_per_gram).toFixed(2),
-    effectiveFrom: row.effective_from,
+    effectiveFrom: new Date(row.effective_from).toISOString(),
   }
 }
 
 async function getOnboardingStatus(tenantId: string) {
-  const [{ count: branchCount }, { count: rateCount }] = await Promise.all([
+  const [branchResult, rateResult] = await Promise.all([
     serviceDb
       .from('branches')
       .select('id', { count: 'exact', head: true })
@@ -83,9 +84,12 @@ async function getOnboardingStatus(tenantId: string) {
       .eq('tenant_id', tenantId),
   ])
 
+  throwIfDbError(branchResult.error, 'Failed to load branch onboarding status')
+  throwIfDbError(rateResult.error, 'Failed to load rates onboarding status')
+
   return {
-    hasBranch: (branchCount ?? 0) > 0,
-    hasRates: (rateCount ?? 0) > 0,
+    hasBranch: (branchResult.count ?? 0) > 0,
+    hasRates: (rateResult.count ?? 0) > 0,
   }
 }
 
@@ -112,7 +116,8 @@ export async function getStoreProfile(tenantId: string): Promise<TenantProfile> 
     country: row.country,
     timezone: row.timezone,
     currency: row.currency,
-    trialEndsAt: row.trial_ends_at,
+    // Supabase returns offset timestamps; normalize to ISO-Z for Zod wire schema.
+    trialEndsAt: new Date(row.trial_ends_at).toISOString(),
     onboarding,
   }
 }
@@ -130,9 +135,7 @@ export async function updateStoreProfile(
 
   if (Object.keys(patch).length > 0) {
     const { error } = await serviceDb.from('tenants').update(patch).eq('id', tenantId)
-    if (error) {
-      throw new Error(error.message)
-    }
+    throwIfDbError(error, 'Failed to update store profile')
   }
 
   return getStoreProfile(tenantId)
@@ -146,9 +149,7 @@ export async function listBranches(tenantId: string): Promise<Branch[]> {
     .is('deleted_at', null)
     .order('created_at', { ascending: true })
 
-  if (error) {
-    throw new Error(error.message)
-  }
+  throwIfDbError(error, 'Failed to list branches')
 
   return (data as BranchRow[]).map(mapBranch)
 }

@@ -1,3 +1,4 @@
+import './load-local-env.js'
 import { buildServer } from './server.js'
 import { config } from './config/env.js'
 

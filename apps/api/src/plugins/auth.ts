@@ -1,7 +1,8 @@
-import type { FastifyInstance } from 'fastify'
+import type { FastifyPluginAsync } from 'fastify'
+import fp from 'fastify-plugin'
+import type { MembershipRole } from '@sonari/types'
 import { UnauthorizedError } from '../lib/errors.js'
 import { verifySupabaseJwt } from '../lib/jwt.js'
-import type { MembershipRole } from '@sonari/types'
 
 export type RequestAuth = {
   userId: string
@@ -25,7 +26,7 @@ function routePath(url: string): string {
   return url.split('?')[0] ?? url
 }
 
-export async function authPlugin(app: FastifyInstance): Promise<void> {
+const authPluginImpl: FastifyPluginAsync = async (app) => {
   app.decorateRequest('auth', undefined as unknown as RequestAuth | null)
 
   app.addHook('preHandler', async (request) => {
@@ -57,5 +58,7 @@ export async function authPlugin(app: FastifyInstance): Promise<void> {
     }
   })
 }
+
+export const authPlugin = fp(authPluginImpl, { name: 'sonari-auth' })
 
 export { serviceDb } from './service-db.js'

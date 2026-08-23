@@ -1,6 +1,10 @@
 # 04 — Store App (Frontend)
 
-**Last-updated:** 2026-07-03 (updated: switched from Next.js to Vite + React)
+**Last-updated:** 2026-08-23 (updated: switched from Next.js to Vite + React)
+
+> **Change note (2026-08-23):** Store name is collected once at signup/bootstrap; onboarding step 1 is GSTIN-only (name shown in page header).
+
+> **Change note (2026-08-23):** `ProtectedRoute` requires tenant bootstrap; email-confirmed users complete store setup on `/signup` before `/onboarding`.
 **Prereq reading:** [00-MASTER-PLAN.md](./00-MASTER-PLAN.md), [03-backend-api.md](./03-backend-api.md)
 
 The main product. Where store owners and staff live all day.
@@ -226,14 +230,17 @@ Route-level code splitting via React Router's `lazy` — matches App Router's au
 
 ```tsx
 export function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { session, loading } = useAuth()
+  const { user, loading, bootstrapped } = useAuthSession()
   if (loading) return <FullPageSpinner />
-  if (!session) return <Navigate to="/login" replace />
+  if (!user) return <Navigate to="/login" replace />
+  if (!bootstrapped) return <Navigate to="/signup" replace />
   return <>{children}</>
 }
 ```
 
-Auth session hydrated from Supabase on boot; falls back to IndexedDB-cached session token if offline. Refresh handled by Supabase JS client.
+Email-confirmed users land on `/signup` in **finish setup** mode (confirm name + create tenant via bootstrap API) before onboarding. Store name from signup is prefilled read-only via `sessionStorage` + Supabase `user_metadata.store_name`.
+
+Onboarding wizard step 1 (**Store details**): GSTIN only — store name is already set at bootstrap and shown in the page title.
 
 ---
 
@@ -494,3 +501,7 @@ Configured via `vite-plugin-pwa` in `vite.config.ts` (see §3). Key strategies:
 - **Smaller bundle:** no framework runtime overhead (~30-40KB gzipped saved)
 - **Simpler mental model:** one boundary (client), one build target
 - **Marketing site deferred:** when we need SEO for a landing page/blog, add a separate `apps/marketing` using **Astro** (best-in-class static site generator) — completely independent of the app
+
+## Changelog
+
+- **2026-08-23:** Signup store name persisted (`sessionStorage` + `user_metadata.store_name`); finish-setup read-only prefilled; onboarding step 1 GSTIN-only.

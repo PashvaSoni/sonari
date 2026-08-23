@@ -1,15 +1,25 @@
 import type { FormEvent, ReactElement } from 'react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { AuthLayout, Button, Input, Label } from '@sonari/ui'
 import { signIn } from '../hooks/useAuth.js'
+import { useAuthSession } from '../hooks/useAuthSession.js'
 import { apiFetch } from '../lib/api-client.js'
+import { navigateAfterAuth } from '../lib/post-auth-navigate.js'
 import type { AuthSession } from '@sonari/types'
 
 export function LoginPage(): ReactElement {
   const navigate = useNavigate()
+  const { user, loading: sessionLoading, authSession } = useAuthSession()
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    if (sessionLoading || !user || !authSession) {
+      return
+    }
+    void navigateAfterAuth(navigate, authSession).catch((err: Error) => setError(err.message))
+  }, [sessionLoading, user, authSession, navigate])
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>): Promise<void> {
     event.preventDefault()
@@ -23,27 +33,20 @@ export function LoginPage(): ReactElement {
     try {
       await signIn(email, password)
       const session = await apiFetch<AuthSession>('/api/v1/auth/session')
-
-      if (!session.bootstrapped) {
-        navigate('/signup')
-        return
-      }
-
-      const store = await apiFetch<{ onboarding: { hasBranch: boolean; hasRates: boolean } }>(
-        '/api/v1/store',
-      )
-
-      if (!store.onboarding.hasBranch || !store.onboarding.hasRates) {
-        navigate('/onboarding')
-        return
-      }
-
-      navigate('/dashboard')
+      await navigateAfterAuth(navigate, session)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Sign in failed')
     } finally {
       setLoading(false)
     }
+  }
+
+  if (sessionLoading && user) {
+    return (
+      <main className="flex min-h-screen items-center justify-center text-sm text-muted-foreground">
+        Loading…
+      </main>
+    )
   }
 
   return (

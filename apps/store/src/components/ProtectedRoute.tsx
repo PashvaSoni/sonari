@@ -1,9 +1,18 @@
 import type { ReactElement, ReactNode } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
-import { useAuth } from '../hooks/useAuth.js'
+import { useAuthSession } from '../hooks/useAuthSession.js'
 
-export function ProtectedRoute({ children }: { children: ReactNode }): ReactElement {
-  const { user, loading } = useAuth()
+type ProtectedRouteProps = {
+  children: ReactNode
+  /** When true (default), user must have completed tenant bootstrap. */
+  requireBootstrap?: boolean
+}
+
+export function ProtectedRoute({
+  children,
+  requireBootstrap = true,
+}: ProtectedRouteProps): ReactElement {
+  const { user, loading, bootstrapped } = useAuthSession()
   const location = useLocation()
 
   if (loading) {
@@ -16,6 +25,10 @@ export function ProtectedRoute({ children }: { children: ReactNode }): ReactElem
 
   if (!user) {
     return <Navigate to="/login" replace state={{ from: location.pathname }} />
+  }
+
+  if (requireBootstrap && !bootstrapped) {
+    return <Navigate to="/signup" replace state={{ from: location.pathname }} />
   }
 
   return <>{children}</>
